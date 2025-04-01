@@ -1,4 +1,6 @@
-import { Component } from '@angular/core';
+import { Component, inject, signal } from '@angular/core';
+import { AppStateServiceService } from '../../services/app-state-service.service';
+import { state } from '@angular/animations';
 
 @Component({
   selector: 'app-top-bar',
@@ -8,5 +10,14 @@ import { Component } from '@angular/core';
   styleUrl: './top-bar.component.scss'
 })
 export class TopBarComponent {
+
+  stateService = inject(AppStateServiceService);
+  
+  titleText = this.stateService.getCurrentPage();
+
+
+showSideBar(){
+  this.stateService.showSideBar();
+}
 
 }
