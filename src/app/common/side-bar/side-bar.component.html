@@ -1,1 +1,13 @@
-<p>side-bar works!</p>
+<section class="flex flex-col absolute top-0 left-0 h-full bg-black/70 w-full transition-all"
+[ngClass]="{'hidden':!visible(), 'block':visible}"
+(click)="hideSideBar($event)">
+    <section class="flex flex-col absolute gap-5 pt-12 transition-all durat p-5
+    bg-surface-charcoal-950 h-full w-3/5 text-secondary-brown-800 text-3xl"
+    [ngClass]="{'top-0 left-0':visible(), '-top-full -left-full':!visible()}" (click)="contentClicked($event)">
+    
+    @for (item of sideBarElements; track i; let i = $index) {
+        <p [routerLink]="sideBarElements[i][1]">{{sideBarElements[i][0]}}</p>
+    }
+
+    </section>
+</section>

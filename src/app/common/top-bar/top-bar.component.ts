@@ -13,11 +13,12 @@ export class TopBarComponent {
 
   stateService = inject(AppStateServiceService);
   
-  titleText = this.stateService.getCurrentPage();
+  titleText = this.stateService.getCurrentPageSignal();
 
 
-showSideBar(){
+showSideBar(event: Event){
   this.stateService.showSideBar();
+  event.stopPropagation();
 }
 
 }

@@ -1,4 +1,4 @@
-import { Injectable, signal } from '@angular/core';
+import { Injectable, Signal, signal } from '@angular/core';
 
 @Injectable({
   providedIn: 'root'
@@ -10,7 +10,7 @@ export class AppStateServiceService {
 
   constructor() { }
 
-  getCurrentPage(){
+  getCurrentPageSignal(): Signal<String>{
     
     return this.currentPage;
   }
@@ -21,5 +21,9 @@ export class AppStateServiceService {
 
   hideSideBar(){
     this.sideBarVisible.set(false);
+  }
+
+  getSideBarStateSignal(): Signal<Boolean>{
+    return this.sideBarVisible;
   }
 }
