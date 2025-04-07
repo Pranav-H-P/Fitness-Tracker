@@ -6,7 +6,7 @@
     [ngClass]="{'top-0 left-0':visible(), '-top-full -left-full':!visible()}" (click)="contentClicked($event)">
     
     @for (item of sideBarElements; track i; let i = $index) {
-        <p [routerLink]="sideBarElements[i][1]">{{sideBarElements[i][0]}}</p>
+        <p [routerLink]="sideBarElements[i][1]" (click)="sectionChangeClicked(sideBarElements[i][2])">{{sideBarElements[i][0]}}</p>
     }
 
     </section>
