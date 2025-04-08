@@ -1,5 +1,6 @@
-<div class="flex">
+<div class="flex flex-col items-center justify-center" [routerLink]="navLink">
     <div>
-        <img [src]="imgSrc" alt="0" [routerLink]="navLink">
+        <img [src]="imgSrc" alt="0" width="40" height="40">
     </div>
+    <p class="text-sm">{{subText}}</p>
 </div>

@@ -17,24 +17,23 @@ export class SideBarComponent {
   visible: Signal<Boolean> = this.stateService.getSideBarStateSignal();
 
   sideBarElements = [ // [name, routerlink, state]
-    ["Dashboard","dashboard/home", AppSectionState.DASHBOARD],
-    ["Exercise","exercise/entry", AppSectionState.EXERCISE],
-    ["Diet","diet/entry", AppSectionState.DIET],
+    ["Dashboard","dashboard/exercise", AppSectionState.DASHBOARD],
+    ["Exercise","workout/entry", AppSectionState.EXERCISE],
+    ["Diet","diet/tracking", AppSectionState.DIET],
     ["Settings", "settings", AppSectionState.SETTINGS]
     
   ]
 
   hideSideBar(event: Event){
     this.stateService.hideSideBar();
-    console.log("hide")
     event.stopPropagation();
   }
   contentClicked(event: Event){
-    console.log("content")
     event.stopPropagation();
   }
   sectionChangeClicked(state: any){ // no idea why setting to string OR AppSectionState causes compile error
     this.stateService.setAppSectionStateSignal(state)
+    this.stateService.hideSideBar();
   }
 
 }
