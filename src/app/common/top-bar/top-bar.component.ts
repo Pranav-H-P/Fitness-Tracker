@@ -1,5 +1,5 @@
 import { Component, inject, signal } from '@angular/core';
-import { AppStateServiceService } from '../../services/app-state-service.service';
+import { AppStateService } from '../../services/app-state.service';
 import { state } from '@angular/animations';
 
 @Component({
@@ -11,7 +11,7 @@ import { state } from '@angular/animations';
 })
 export class TopBarComponent {
 
-  stateService = inject(AppStateServiceService);
+  stateService = inject(AppStateService);
   
   titleText = this.stateService.getCurrentPageSignal();
 

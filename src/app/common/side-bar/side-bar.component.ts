@@ -1,5 +1,5 @@
 import { Component, inject, Signal } from '@angular/core';
-import { AppStateServiceService } from '../../services/app-state-service.service';
+import { AppStateService } from '../../services/app-state.service';
 import { NgClass } from '@angular/common';
 import { RouterLink } from '@angular/router';
 import { AppSectionState } from '../../eums';
@@ -12,13 +12,13 @@ import { AppSectionState } from '../../eums';
   styleUrl: './side-bar.component.scss'
 })
 export class SideBarComponent {
-  stateService = inject(AppStateServiceService);
+  stateService = inject(AppStateService);
 
   visible: Signal<Boolean> = this.stateService.getSideBarStateSignal();
 
   sideBarElements = [ // [name, routerlink, state]
     ["Dashboard","dashboard/exercise", AppSectionState.DASHBOARD],
-    ["Exercise","workout/entry", AppSectionState.EXERCISE],
+    ["Fitness","workout/entry", AppSectionState.EXERCISE],
     ["Diet","diet/tracking", AppSectionState.DIET],
     ["Settings", "settings", AppSectionState.SETTINGS]
     
@@ -33,7 +33,7 @@ export class SideBarComponent {
   }
   sectionChangeClicked(state: any){ // no idea why setting to string OR AppSectionState causes compile error
     this.stateService.setAppSectionStateSignal(state)
-    this.stateService.hideSideBar();
+    this.stateService.hideSideBar();  
   }
 
 }

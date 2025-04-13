@@ -1,5 +1,5 @@
 import { Component, inject, Input, signal } from '@angular/core';
-import { AppStateServiceService } from '../../../services/app-state-service.service';
+import { AppStateService } from '../../../services/app-state.service';
 import { RouterLink } from '@angular/router';
 
 @Component({
@@ -11,7 +11,7 @@ import { RouterLink } from '@angular/router';
 })
 export class NavButtonComponent {
   
-  appStateService = inject(AppStateServiceService);
+  appStateService = inject(AppStateService);
   @Input() imgSrc = "";
   @Input() subText = "";
   @Input() navLink = "";

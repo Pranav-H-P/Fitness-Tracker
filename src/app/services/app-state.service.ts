@@ -4,7 +4,7 @@ import { AppSectionState } from '../eums';
 @Injectable({
   providedIn: 'root'
 })
-export class AppStateServiceService {
+export class AppStateService {
 
   currentPage = signal<String>("TestTitle");
   sideBarVisible = signal<Boolean>(false);
