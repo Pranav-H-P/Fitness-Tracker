@@ -1,5 +1,6 @@
-import { Injectable, Signal, signal } from '@angular/core';
+import { inject, Injectable, Signal, signal } from '@angular/core';
 import { ExerciseEntryData } from '../models';
+import { DatabaseService } from './database.service';
 
 @Injectable({
   providedIn: 'root'
@@ -8,6 +9,7 @@ export class DataService {
 
   // unpersisted exerciseData
   tempExerciseData = signal<Map<string, ExerciseEntryData>>(new Map<string, ExerciseEntryData>()); 
+  databaseService = inject(DatabaseService);
 
   constructor() { }
 
@@ -26,6 +28,10 @@ export class DataService {
 
   removeTempExercise(name: string){
     return this.tempExerciseData().delete(name)
+  }
+
+  saveExerciseEntry(exData: ExerciseEntryData){
+    this.databaseService.saveExerciseEntry(exData);
   }
 
 }

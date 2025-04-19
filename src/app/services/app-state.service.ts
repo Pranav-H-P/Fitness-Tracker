@@ -6,6 +6,9 @@ import { AppSectionState } from '../eums';
 })
 export class AppStateService {
 
+
+  debug = true;
+
   currentPage = signal<String>("TestTitle");
   sideBarVisible = signal<Boolean>(false);
   appSectionState = signal<AppSectionState>(AppSectionState.DASHBOARD); // if its in dashboard, exercise, diet or settings section
