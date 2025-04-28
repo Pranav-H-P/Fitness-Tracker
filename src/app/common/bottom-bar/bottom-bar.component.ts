@@ -8,33 +8,76 @@ import { NavButtonData } from '../../models';
   standalone: true,
   imports: [NavButtonComponent],
   templateUrl: './bottom-bar.component.html',
-  styleUrl: './bottom-bar.component.scss'
+  styleUrl: './bottom-bar.component.scss',
 })
 export class BottomBarComponent {
-
   stateService = inject(AppStateService);
 
   currentState = this.stateService.getAppSectionStateSignal();
 
-  barLayout = {
-    "dashboard": [ // add routerlink, image, subtext as object
-      new NavButtonData("dashboard/exercise","assets/images/dumbell_brown_700.svg","Exercise"),
-      new NavButtonData("dashboard/diet","assets/images/dumbell_brown_700.svg","Diet"),
-      new NavButtonData("dashboard/graph","assets/images/dumbell_brown_700.svg","Graph")
+  barLayout: { [key: string]: Array<NavButtonData> } = {
+    dashboard: [
+      {
+        navLink: 'dashboard/exercise',
+        imgLink: 'assets/images/dumbell_brown_700.svg',
+        text: 'Exercise',
+      },
+      {
+        navLink: 'dashboard/diet',
+        imgLink: 'assets/images/food.svg',
+        text: 'Diet',
+      },
+      {
+        navLink: 'dashboard/graph',
+        imgLink: 'assets/images/graph.svg',
+        text: 'Graph',
+      },
     ],
-    "exercise": [
-      new NavButtonData("workout/entry","assets/images/dumbell_brown_700.svg","Entry"),
-      new NavButtonData("workout/create","assets/images/dumbell_brown_700.svg","Create"),
-      new NavButtonData("workout/logs","assets/images/dumbell_brown_700.svg","Logs")
+    exercise: [
+      {
+        navLink: 'workout/entry',
+        imgLink: 'assets/images/entry.svg',
+        text: 'Entry',
+      },
+      {
+        navLink: 'workout/create',
+        imgLink: 'assets/images/add.svg',
+        text: 'Create',
+      },
+      {
+        navLink: 'workout/logs',
+        imgLink: 'assets/images/logbook.svg',
+        text: 'Logs',
+      },
     ],
-    "diet": [
-      new NavButtonData("diet/tracking","assets/images/dumbell_brown_700.svg","Track"),
-      new NavButtonData("diet/createfood","assets/images/dumbell_brown_700.svg","Custom Food"),
-      new NavButtonData("diet/createtemplate","assets/images/dumbell_brown_700.svg","Templates")
+    diet: [
+      {
+        navLink: 'diet/tracking',
+        imgLink: 'assets/images/entry.svg',
+        text: 'Track',
+      },
+      {
+        navLink: 'diet/createfood',
+        imgLink: 'assets/images/add.svg',
+        text: 'Custom Food',
+      },
+      {
+        navLink: 'diet/createtemplate',
+        imgLink: 'assets/images/templates.svg',
+        text: 'Templates',
+      },
     ],
-    "settings": [
-      new NavButtonData("settings/exercise","assets/images/dumbell_brown_700.svg","Exercise"),
-      new NavButtonData("settings/diet","assets/images/dumbell_brown_700.svg","Diet")
-    ]
-  }
+    settings: [
+      {
+        navLink: 'settings/exercise',
+        imgLink: 'assets/images/dumbell_brown_700.svg',
+        text: 'Exercise',
+      },
+      {
+        navLink: 'settings/diet',
+        imgLink: 'assets/images/food.svg',
+        text: 'Diet',
+      },
+    ],
+  };
 }

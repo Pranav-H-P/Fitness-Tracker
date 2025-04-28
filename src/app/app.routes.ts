@@ -6,6 +6,8 @@ import { EntryItemsPageComponent } from './pages/workout/entry/entry-items-page/
 import { ExerciseStatsComponent } from './pages/dashboard/exercise/exercise-stats/exercise-stats.component';
 import { DietStatsComponent } from './pages/dashboard/diet/diet-stats/diet-stats.component';
 import { GraphPageComponent } from './pages/dashboard/graphs/graph-page/graph-page.component';
+import { ExerciseEntryPageComponent } from './pages/workout/entry/exercise-entry-page/exercise-entry-page.component';
+import { MetricEntryPageComponent } from './pages/workout/entry/metric-entry-page/metric-entry-page.component';
 
 export const routes: Routes = [
     {
@@ -28,6 +30,14 @@ export const routes: Routes = [
     {
         path: 'workout/entry',
         component: EntryItemsPageComponent
+    },
+    {
+        path: 'workout/entry/exercise/:id',
+        component: ExerciseEntryPageComponent
+    },
+    {
+        path: 'workout/entry/metric/:id',
+        component: MetricEntryPageComponent
     },
     {
         path: 'workout/create',

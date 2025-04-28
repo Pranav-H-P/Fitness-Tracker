@@ -2,39 +2,40 @@ import { Injectable, Signal, signal } from '@angular/core';
 import { AppSectionState } from '../eums';
 
 @Injectable({
-  providedIn: 'root'
+  providedIn: 'root',
 })
 export class AppStateService {
-
-
   debug = true;
 
-  currentPage = signal<String>("TestTitle");
+  currentPage = signal<String>('TestTitle');
   sideBarVisible = signal<Boolean>(false);
   appSectionState = signal<AppSectionState>(AppSectionState.DASHBOARD); // if its in dashboard, exercise, diet or settings section
 
-  constructor() { }
+  constructor() {}
 
-  getCurrentPageSignal(): Signal<String>{
-    
+  getCurrentPageSignal(): Signal<String> {
     return this.currentPage;
   }
 
-  showSideBar(){
+  setCurrentPage(title: string) {
+    this.currentPage.set(title);
+  }
+
+  showSideBar() {
     this.sideBarVisible.set(true);
   }
 
-  hideSideBar(){
+  hideSideBar() {
     this.sideBarVisible.set(false);
   }
 
-  getSideBarStateSignal(): Signal<Boolean>{
+  getSideBarStateSignal(): Signal<Boolean> {
     return this.sideBarVisible;
   }
-  getAppSectionStateSignal(): Signal<AppSectionState>{
+  getAppSectionStateSignal(): Signal<AppSectionState> {
     return this.appSectionState;
   }
-  setAppSectionStateSignal(state: AppSectionState){
+  setAppSectionStateSignal(state: AppSectionState) {
     this.appSectionState.set(state);
   }
 }

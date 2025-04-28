@@ -1,37 +1,114 @@
 import { inject, Injectable, Signal, signal } from '@angular/core';
-import { ExerciseEntryData } from '../models';
+import { ExerciseEntryData, Metric } from '../models';
 import { DatabaseService } from './database.service';
+import { ToastService } from './toast.service';
 
 @Injectable({
-  providedIn: 'root'
+  providedIn: 'root',
 })
 export class DataService {
-
   // unpersisted exerciseData
-  tempExerciseData = signal<Map<string, ExerciseEntryData>>(new Map<string, ExerciseEntryData>()); 
+  tempExerciseEntryData = signal<Map<string, ExerciseEntryData>>(
+    new Map<string, ExerciseEntryData>()
+  );
   databaseService = inject(DatabaseService);
+  toastService = inject(ToastService);
 
-  constructor() { }
+  exerciseList = signal<Array<string>>([]);
+  metricList = signal<Array<string>>([]);
+  muscleList = signal<Array<string>>([]);
 
+  constructor() {}
 
-  getExerciseFromTempData(name: string): ExerciseEntryData | undefined{
-    return this.tempExerciseData().get(name);
+  updateExerciseList(searchTerm?: string, muscleName?: string | null) {
+    this.databaseService.getExerciseNameList(searchTerm, muscleName).subscribe({
+      next: (res) => {
+        const resArr = res.values;
+        let newList: Array<string> = [];
+
+        if (resArr && resArr?.length > 0) {
+          resArr.forEach((obj) => {
+            newList.push(obj.NAME);
+          });
+        }
+
+        this.metricList.set(newList);
+      },
+      error: (err) => {
+        this.toastService.showToast('Error retrieving data!');
+      },
+    });
   }
 
-  setExerciseInTempData(exData: ExerciseEntryData){
-    this.tempExerciseData().set(exData.exerciseName, exData);
+  updateMetricList(searchTerm?: string) {
+    this.databaseService.getMetricNameList(searchTerm).subscribe({
+      next: (res) => {
+        const resArr = res.values;
+        let newList: Array<string> = [];
+
+        if (resArr && resArr?.length > 0) {
+          resArr.forEach((obj) => {
+            newList.push(obj.NAME);
+          });
+        }
+
+        this.metricList.set(newList);
+      },
+      error: (err) => {
+        this.toastService.showToast('Error retrieving data!');
+      },
+    });
   }
 
-  getTempExerciseDataSignal(): Signal<Map<string, ExerciseEntryData>>{ // for template rendering only
-    return this.tempExerciseData;
+  updateMuscleList() {
+    this.databaseService.getMuscleNameList().subscribe({
+      next: (res) => {
+        const resArr = res.values;
+        let newList: Array<string> = [];
+
+        if (resArr && resArr?.length > 0) {
+          resArr.forEach((obj) => {
+            newList.push(obj.NAME);
+          });
+        }
+
+        this.muscleList.set(newList);
+      },
+      error: (err) => {
+        this.toastService.showToast('Error retrieving data!');
+      },
+    });
   }
 
-  removeTempExercise(name: string){
-    return this.tempExerciseData().delete(name)
+  getTempExerciseDataSignal(): Signal<Map<string, ExerciseEntryData>> {
+    // for template rendering only
+    return this.tempExerciseEntryData;
   }
 
-  saveExerciseEntry(exData: ExerciseEntryData){
+  getExerciseListSignal() {
+    return this.exerciseList;
+  }
+
+  getMetricListSignal() {
+    return this.metricList;
+  }
+
+  getMuscleListSignal() {
+    return this.muscleList;
+  }
+
+  getExerciseFromTempData(name: string): ExerciseEntryData | undefined {
+    return this.tempExerciseEntryData().get(name);
+  }
+
+  setExerciseInTempData(exData: ExerciseEntryData) {
+    this.tempExerciseEntryData().set(exData.exerciseName, exData);
+  }
+  removeTempExercise(name: string) {
+    return this.tempExerciseEntryData().delete(name);
+  }
+
+  saveExerciseEntry(exData: ExerciseEntryData) {
     this.databaseService.saveExerciseEntry(exData);
   }
-
 }

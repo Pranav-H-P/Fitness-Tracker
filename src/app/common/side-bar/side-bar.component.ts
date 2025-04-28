@@ -16,11 +16,11 @@ export class SideBarComponent {
 
   visible: Signal<Boolean> = this.stateService.getSideBarStateSignal();
 
-  sideBarElements = [ // [name, routerlink, state]
-    ["Dashboard","dashboard/exercise", AppSectionState.DASHBOARD],
-    ["Fitness","workout/entry", AppSectionState.EXERCISE],
-    ["Diet","diet/tracking", AppSectionState.DIET],
-    ["Settings", "settings", AppSectionState.SETTINGS]
+  sideBarElements = [ // [name, routerlink, state, icon]
+    ["Dashboard","dashboard/exercise", AppSectionState.DASHBOARD, "assets/images/dashboard.svg"],
+    ["Fitness","workout/entry", AppSectionState.EXERCISE, "assets/images/dumbell_brown_700.svg"],
+    ["Diet","diet/tracking", AppSectionState.DIET, "assets/images/food.svg"],
+    ["Settings", "settings", AppSectionState.SETTINGS, "assets/images/settings.svg"]
     
   ]
 
