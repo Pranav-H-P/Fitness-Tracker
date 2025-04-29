@@ -19,11 +19,17 @@ export class SplashScreenComponent {
     this.appInitialization();
   }
 
-  async appInitialization() {
-    await this.databaseService.initializeDb();
-    await this.dataService.updateExerciseList();
-    await this.dataService.updateMetricList();
+  appInitialization() {
+    this.databaseService.initializeDb().then(() => {
+      this.dataInitialization();
+    });
 
     this.visible.set(false);
+  }
+
+  dataInitialization() {
+    this.dataService.updateMetricList();
+    this.dataService.updateMuscleList();
+    this.dataService.updateExerciseList('', null);
   }
 }

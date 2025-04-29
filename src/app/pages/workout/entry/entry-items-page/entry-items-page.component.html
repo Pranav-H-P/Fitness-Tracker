@@ -26,7 +26,7 @@
         @for (name of muscleList(); track i; let i = $index) {
         <div (click)="setMuscleFilter(name)"
           class="p-2 py-5 rounded-lg text-wrap whitespace-normal h-auto text-center align-middle"
-          [ngClass]="{'bg-secondary-brown-500': muscleName !== name, 'bg-secondary-brown-900': muscleName === name}">
+          [ngClass]="{'bg-secondary-brown-500': muscleName() !== name, 'bg-secondary-brown-900': muscleName() === name}">
           <p>{{ name }}</p>
         </div>
         }

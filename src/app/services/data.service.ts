@@ -20,19 +20,23 @@ export class DataService {
 
   constructor() {}
 
-  updateExerciseList(searchTerm?: string, muscleName?: string | null) {
+  updateExerciseList(
+    searchTerm: string = '',
+    muscleName: string | null = null
+  ) {
     this.databaseService.getExerciseNameList(searchTerm, muscleName).subscribe({
       next: (res) => {
         const resArr = res.values;
         let newList: Array<string> = [];
-
+        console.log('search term' + searchTerm);
+        console.log(res);
         if (resArr && resArr?.length > 0) {
           resArr.forEach((obj) => {
             newList.push(obj.NAME);
           });
         }
 
-        this.metricList.set(newList);
+        this.exerciseList.set(newList);
       },
       error: (err) => {
         this.toastService.showToast('Error retrieving data!');

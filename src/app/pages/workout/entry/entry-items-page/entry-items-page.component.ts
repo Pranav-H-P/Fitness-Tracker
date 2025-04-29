@@ -28,8 +28,8 @@ export class EntryItemsPageComponent {
   activeExercises: Signal<Map<string, ExerciseEntryData>> =
     this.dataService.getTempExerciseDataSignal();
 
-  searchTerm: string = '';
-  muscleName: string | null = null;
+  searchTerm = signal<string>('');
+  muscleName = signal<string | null>(null);
 
   tabData: Array<TabData> = [
     {
@@ -44,14 +44,18 @@ export class EntryItemsPageComponent {
 
   constructor() {
     this.stateService.setCurrentPage('Entry');
+    this.searchTerm.set('');
+    this.muscleName.set(null);
   }
   changeTab(ind: number) {
     this.currentTab.set(ind);
+    this.searchTerm.set('');
+    this.muscleName.set(null);
     if (ind === 0) {
-      this.dataService.updateExerciseList();
+      this.updateExerciseList();
       this.displayList = this.dataService.getExerciseListSignal();
     } else if (ind === 1) {
-      this.dataService.updateMetricList();
+      this.updateMetricList();
       this.displayList = this.dataService.getMetricListSignal();
     }
   }
@@ -69,9 +73,9 @@ export class EntryItemsPageComponent {
 
   searchData() {
     if (this.currentTab() === 0) {
-      this.dataService.updateExerciseList(this.searchTerm, this.muscleName);
+      this.updateExerciseList();
     } else if (this.currentTab() === 1) {
-      this.dataService.updateMetricList(this.searchTerm);
+      this.updateMetricList();
     }
   }
 
@@ -80,14 +84,22 @@ export class EntryItemsPageComponent {
     this.filterVisible.update((val) => !val);
   }
 
+  updateExerciseList() {
+    this.dataService.updateExerciseList(this.searchTerm(), this.muscleName());
+  }
+
+  updateMetricList() {
+    this.dataService.updateMetricList(this.searchTerm());
+  }
+
   setMuscleFilter(name: string) {
-    if (this.muscleName === name) {
-      this.muscleName = null;
+    if (this.muscleName() === name) {
+      this.muscleName.set(null);
     } else {
-      this.muscleName = name;
+      this.muscleName.set(name);
     }
 
-    this.dataService.updateExerciseList(this.searchTerm, this.muscleName);
+    this.updateExerciseList();
     this.toggleFilter();
   }
 }

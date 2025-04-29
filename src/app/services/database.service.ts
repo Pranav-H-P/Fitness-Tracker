@@ -1,83 +1,35 @@
-import { Injectable, signal } from '@angular/core';
+import { inject, Injectable, signal } from '@angular/core';
 import { Exercise, ExerciseEntryData, Metric } from '../models';
 import {
   CapacitorSQLite,
-  capSQLiteChanges,
   DBSQLiteValues,
   SQLiteConnection,
   SQLiteDBConnection,
 } from '@capacitor-community/sqlite';
-import { from, Observable } from 'rxjs';
+import { firstValueFrom, from, lastValueFrom, Observable } from 'rxjs';
+import { PredefinedDataService } from './predefined-data.service';
+import { ToastService } from './toast.service';
 
 @Injectable({
   providedIn: 'root',
 })
 export class DatabaseService {
+  predefinedDataService = inject(PredefinedDataService);
+  toastService = inject(ToastService);
+
   DB_NAME = 'FITNESS_DB';
 
   sqlite: SQLiteConnection = new SQLiteConnection(CapacitorSQLite);
   db!: SQLiteDBConnection;
 
-  predefinedMuscles: Array<string> = [
-    'Calves',
-    'Hamstrings',
-    'Quads',
-    'Glutes',
-    'Biceps',
-    'Brachialis',
-    'Triceps',
-    'Quads',
-    'Chest',
-    'Forearms',
-    'Traps',
-    'Mid Back',
-    'Lats',
-    'Lower Back',
-    'Rear Delt',
-    'Side Delt',
-    'Front Delt',
-    'Neck',
-    'Abs',
-    'Obliques',
-  ];
-
-  predefinedMetrics: Array<Metric> = [
-    {
-      name: 'Body Weight',
-      unit: 'Kg',
-      isNumeric: true,
-    },
-    {
-      name: 'Calorie',
-      unit: 'Kcal',
-      isNumeric: true,
-    },
-    {
-      name: 'Protein',
-      unit: 'g',
-      isNumeric: true,
-    },
-    {
-      name: 'Carbohydrate',
-      unit: 'g',
-      isNumeric: true,
-    },
-    {
-      name: 'Fat',
-      unit: 'g',
-      isNumeric: true,
-    },
-  ];
-
+  tableNames = ['EXERCISE', 'METRIC', 'EXERCISE_ENTRY', 'METRIC_ENTRY'];
   constructor() {}
 
   async clearDb() {
     // only for debug and dev
-    ['EXERCISE', 'METRIC', 'EXERCISE_ENTRY', 'METRIC_ENTRY'].forEach(
-      async (tableName) => {
-        await this.db.execute(`DROP TABLE IF EXISTS ${tableName}`);
-      }
-    );
+    this.tableNames.forEach(async (tableName) => {
+      await this.db.execute(`DROP TABLE IF EXISTS ${tableName}`);
+    });
   }
 
   async initializeDb() {
@@ -90,8 +42,9 @@ export class DatabaseService {
     );
 
     await this.db.open();
-    await this.clearDb();
+    await this.clearDb(); // remove before release
     await this.createTables();
+
     await this.populateInitialDb();
   }
 
@@ -135,51 +88,98 @@ export class DatabaseService {
     await this.db.execute(exerciseEntrySchema);
     await this.db.execute(metricEntrySchema);
     await this.db.execute(muscleSchema);
+    console.log('creating done');
+  }
+
+  async checkTableEmpty(tableName: string): Promise<boolean> {
+    const res = await this.db.query(`SELECT * FROM ${tableName} LIMIT 1`);
+    console.log(res.values);
+    if (res.values && res.values?.length > 0) {
+      return false;
+    }
+    return true;
   }
 
   async populateInitialDb() {
     // prepopulated metrics like bodyweight, calories, etc
+    // only to be run when all tables are empty (first time starting)
 
-    this.predefinedMetrics.forEach(async (metric) => {
-      await this.db.run(
-        'INSERT OR IGNORE INTO METRIC (NAME, UNIT, IS_NUMERIC) VALUES (?, ?, ?);',
-        [metric.name, metric.unit, metric.isNumeric]
-      );
-    });
+    const emptyStatuses = await Promise.all(
+      this.tableNames.map((name) => this.checkTableEmpty(name))
+    );
+    const allEmpty = emptyStatuses.every((status) => status);
+    console.log(emptyStatuses);
 
-    this.predefinedMuscles.forEach(async (muscle) => {
-      await this.db.run('INSERT OR IGNORE INTO MUSCLE (NAME) VALUES (?);', [
-        muscle,
-      ]);
-    });
+    if (allEmpty) {
+      try {
+        const data = await firstValueFrom(
+          this.predefinedDataService.getPredefinedData()
+        );
+        const metricPromises = data['METRIC'].map((metric: Metric) =>
+          this.db.run(
+            'INSERT OR IGNORE INTO METRIC (NAME, UNIT, IS_NUMERIC) VALUES (?, ?, ?);',
+            [metric.name, metric.unit, metric.isNumeric]
+          )
+        );
+
+        const musclePromises = data['MUSCLE'].map((muscle: string) =>
+          this.db.run('INSERT OR IGNORE INTO MUSCLE (NAME) VALUES (?);', [
+            muscle,
+          ])
+        );
+
+        const exercisePromises = data['EXERCISE'].map((exercise: Exercise) =>
+          this.db.run(
+            'INSERT OR IGNORE INTO EXERCISE (NAME, UNIT, MUSCLES_HIT) VALUES (?, ?, ?);',
+            [exercise.name, exercise.unit, JSON.stringify(exercise.musclesHit)]
+          )
+        );
+
+        await Promise.all([
+          ...metricPromises,
+          ...musclePromises,
+          ...exercisePromises,
+        ]);
+
+        console.log(data['EXERCISE']);
+        console.log('populating done');
+      } catch (err) {
+        this.toastService.showToast('Error fetching predefined data!');
+        console.log('populating done', err);
+      }
+    }
   }
 
   getExerciseNameList(
     searchTerm?: string,
     muscleName?: string | null
   ): Observable<DBSQLiteValues> {
+    console.log('fetching ex list');
+
+    (async () => {
+      const t1 = await this.db.query(`SELECT * FROM EXERCISE;`);
+      const t2 = await this.db.query(
+        `SELECT * FROM EXERCISE, JSON_EACH(EXERCISE.MUSCLES_HIT);`
+      );
+
+      console.log(t1);
+      console.log(t2);
+    })();
+
     if (!searchTerm) {
       searchTerm = '';
     }
-    if (!muscleName) {
+    if (muscleName) {
       return from(
         this.db.query(
-          `SELECT NAME FROM 
-          EXERCISE, JSON_EACH(EXERCISE.MUSCLES_HIT)
-        WHERE 
-          LOWER(NAME) LIKE '%' || LOWER(?) || '%' 
-        AND
-          JSON_EACH.VALUE = ? ORDER BY NAME ASC;`,
+          `SELECT EXERCISE.NAME FROM EXERCISE, JSON_EACH(EXERCISE.MUSCLES_HIT) AS JS WHERE LOWER(EXERCISE.NAME) LIKE '%' || LOWER(?) || '%' AND LOWER(JSON_EXTRACT(JS.value,'$.muscleName')) = LOWER(?) ORDER BY LOWER(EXERCISE.NAME) ASC;`,
           [searchTerm, muscleName]
         )
       );
     } else {
       return from(
         this.db.query(
-          `SELECT NAME FROM 
-          EXERCISE, JSON_EACH(EXERCISE.MUSCLES_HIT)
-        WHERE 
-          LOWER(NAME) LIKE '%' || LOWER(?) || '%' ORDER BY NAME ASC;`,
+          `SELECT EXERCISE.NAME FROM EXERCISE WHERE LOWER(EXERCISE.NAME) LIKE '%' || LOWER(?) || '%' ORDER BY LOWER(EXERCISE.NAME) ASC;`,
           [searchTerm]
         )
       );
@@ -192,14 +192,16 @@ export class DatabaseService {
     }
     return from(
       this.db.query(
-        "SELECT NAME FROM METRIC WHERE LOWER(NAME) LIKE '%' || LOWER(?) || '%' ORDER BY NAME ASC;",
+        "SELECT NAME FROM METRIC WHERE LOWER(NAME) LIKE '%' || LOWER(?) || '%' ORDER BY LOWER(NAME) ASC;",
         [searchTerm]
       )
     );
   }
 
   getMuscleNameList(): Observable<DBSQLiteValues> {
-    return from(this.db.query('SELECT NAME FROM MUSCLE ORDER BY NAME ASC;'));
+    return from(
+      this.db.query('SELECT NAME FROM MUSCLE ORDER BY LOWER(NAME) ASC;')
+    );
   }
 
   addExercise() {}

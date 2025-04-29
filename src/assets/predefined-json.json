@@ -1,0 +1,616 @@
+{
+  "MUSCLE": [
+    "Calves",
+    "Hamstrings",
+    "Quads",
+    "Glutes",
+    "Biceps",
+    "Brachialis",
+    "Triceps",
+    "Quads",
+    "Chest",
+    "Forearms",
+    "Traps",
+    "Mid Back",
+    "Lats",
+    "Lower Back",
+    "Rear Delt",
+    "Side Delt",
+    "Front Delt",
+    "Neck",
+    "Abs",
+    "Obliques"
+  ],
+  "EXERCISE": [
+    {
+      "name": "Bb Bicep Curl",
+      "unit": "Kg",
+      "musclesHit": [
+        { "muscleName": "Biceps", "ratio": 1 },
+        { "muscleName": "Brachialis", "ratio": 0.6 }
+      ]
+    },
+    {
+      "name": "Machine Preacher Curl",
+      "unit": "Kg",
+      "musclesHit": [
+        { "muscleName": "Biceps", "ratio": 1 },
+        { "muscleName": "Brachialis", "ratio": 0.6 }
+      ]
+    },
+    {
+      "name": "Preacher Curl",
+      "unit": "Kg",
+      "musclesHit": [
+        { "muscleName": "Biceps", "ratio": 1 },
+        { "muscleName": "Brachialis", "ratio": 0.6 }
+      ]
+    },
+    {
+      "name": "Db Bicep Curl",
+      "unit": "Kg",
+      "musclesHit": [
+        { "muscleName": "Biceps", "ratio": 1 },
+        { "muscleName": "Brachialis", "ratio": 0.6 }
+      ]
+    },
+    {
+      "name": "Db Hammer Curl",
+      "unit": "Kg",
+      "musclesHit": [
+        { "muscleName": "Brachialis", "ratio": 1 },
+        { "muscleName": "Biceps", "ratio": 0.5 }
+      ]
+    },
+    {
+      "name": "Db Incline Bicep Curl",
+      "unit": "Kg",
+      "musclesHit": [
+        { "muscleName": "Biceps", "ratio": 1 },
+        { "muscleName": "Brachialis", "ratio": 0.6 }
+      ]
+    },
+    {
+      "name": "Db Incline Hammer Curl",
+      "unit": "Kg",
+      "musclesHit": [
+        { "muscleName": "Brachialis", "ratio": 1 },
+        { "muscleName": "Biceps", "ratio": 0.5 }
+      ]
+    },
+    {
+      "name": "Cable (Rope) Bicep Curl",
+      "unit": "Kg",
+      "musclesHit": [
+        { "muscleName": "Biceps", "ratio": 1 },
+        { "muscleName": "Brachialis", "ratio": 0.7 }
+      ]
+    },
+    {
+      "name": "Cable (Bar) Bicep Curl",
+      "unit": "Kg",
+      "musclesHit": [
+        { "muscleName": "Biceps", "ratio": 1 },
+        { "muscleName": "Brachialis", "ratio": 0.6 }
+      ]
+    },
+    {
+      "name": "Bayesian Curl",
+      "unit": "Kg",
+      "musclesHit": [
+        { "muscleName": "Biceps", "ratio": 1 },
+        { "muscleName": "Brachialis", "ratio": 0.6 }
+      ]
+    },
+    {
+      "name": "Cable (Rope) Hammer Curl",
+      "unit": "Kg",
+      "musclesHit": [
+        { "muscleName": "Brachialis", "ratio": 1 },
+        { "muscleName": "Biceps", "ratio": 0.5 }
+      ]
+    },
+    {
+      "name": "Cable Incline Bicep Curl",
+      "unit": "Kg",
+      "musclesHit": [
+        { "muscleName": "Biceps", "ratio": 1 },
+        { "muscleName": "Brachialis", "ratio": 0.6 }
+      ]
+    },
+    {
+      "name": "Reverse Curl",
+      "unit": "Kg",
+      "musclesHit": [
+        { "muscleName": "Forearms", "ratio": 1 },
+        { "muscleName": "Brachialis", "ratio": 1 },
+        { "muscleName": "Biceps", "ratio": 0.4 }
+      ]
+    },
+    {
+      "name": "Bench Press",
+      "unit": "Kg",
+      "musclesHit": [
+        { "muscleName": "Chest", "ratio": 1 },
+        { "muscleName": "Triceps", "ratio": 0.4 },
+        { "muscleName": "Front Delt", "ratio": 0.5 }
+      ]
+    },
+    {
+      "name": "Db Flat Press",
+      "unit": "Kg",
+      "musclesHit": [
+        { "muscleName": "Chest", "ratio": 1 },
+        { "muscleName": "Triceps", "ratio": 0.5 },
+        { "muscleName": "Front Delt", "ratio": 0.5 }
+      ]
+    },
+    {
+      "name": "Machine Flat Press",
+      "unit": "Kg",
+      "musclesHit": [
+        { "muscleName": "Chest", "ratio": 1 },
+        { "muscleName": "Triceps", "ratio": 0.3 },
+        { "muscleName": "Front Delt", "ratio": 0.4 }
+      ]
+    },
+    {
+      "name": "Incline Bench Press",
+      "unit": "Kg",
+      "musclesHit": [
+        { "muscleName": "Chest", "ratio": 1 },
+        { "muscleName": "Front Delt", "ratio": 0.6 },
+        { "muscleName": "Triceps", "ratio": 0.4 }
+      ]
+    },
+    {
+      "name": "Db Incline Press",
+      "unit": "Kg",
+      "musclesHit": [
+        { "muscleName": "Chest", "ratio": 1 },
+        { "muscleName": "Front Delt", "ratio": 0.6 },
+        { "muscleName": "Triceps", "ratio": 0.5 }
+      ]
+    },
+    {
+      "name": "Machine Incline Press",
+      "unit": "Kg",
+      "musclesHit": [
+        { "muscleName": "Chest", "ratio": 1 },
+        { "muscleName": "Front Delt", "ratio": 0.5 },
+        { "muscleName": "Triceps", "ratio": 0.4 }
+      ]
+    },
+    {
+      "name": "Bb Overhead Press",
+      "unit": "Kg",
+      "musclesHit": [
+        { "muscleName": "Front Delt", "ratio": 1 },
+        { "muscleName": "Triceps", "ratio": 0.5 },
+        { "muscleName": "Side Delt", "ratio": 0.2 }
+      ]
+    },
+    {
+      "name": "Db Overhead Press",
+      "unit": "Kg",
+      "musclesHit": [
+        { "muscleName": "Front Delt", "ratio": 1 },
+        { "muscleName": "Triceps", "ratio": 0.6 },
+        { "muscleName": "Side Delt", "ratio": 0.3 }
+      ]
+    },
+    {
+      "name": "Machine Overhead Press",
+      "unit": "Kg",
+      "musclesHit": [
+        { "muscleName": "Front Delt", "ratio": 1 },
+        { "muscleName": "Triceps", "ratio": 0.5 },
+        { "muscleName": "Side Delt", "ratio": 0.2 }
+      ]
+    },
+    {
+      "name": "Db Chest Fly",
+      "unit": "Kg",
+      "musclesHit": [{ "muscleName": "Chest", "ratio": 1 }]
+    },
+    {
+      "name": "Cable Chest Fly",
+      "unit": "Kg",
+      "musclesHit": [{ "muscleName": "Chest", "ratio": 1 }]
+    },
+    {
+      "name": "Machine Chest Fly",
+      "unit": "Kg",
+      "musclesHit": [{ "muscleName": "Chest", "ratio": 1 }]
+    },
+    {
+      "name": "Cable (Rope) Tricep Extension",
+      "unit": "Kg",
+      "musclesHit": [{ "muscleName": "Triceps", "ratio": 1 }]
+    },
+    {
+      "name": "Cable (Bar) Tricep Extension",
+      "unit": "Kg",
+      "musclesHit": [{ "muscleName": "Triceps", "ratio": 1 }]
+    },
+    {
+      "name": "Tricep Pushdown (Rope)",
+      "unit": "Kg",
+      "musclesHit": [{ "muscleName": "Triceps", "ratio": 1 }]
+    },
+    {
+      "name": "Tricep Pushdown (Bar)",
+      "unit": "Kg",
+      "musclesHit": [{ "muscleName": "Triceps", "ratio": 1 }]
+    },
+    {
+      "name": "Db SkullCrusher",
+      "unit": "Kg",
+      "musclesHit": [{ "muscleName": "Triceps", "ratio": 1 }]
+    },
+    {
+      "name": "Bb SkullCrusher",
+      "unit": "Kg",
+      "musclesHit": [{ "muscleName": "Triceps", "ratio": 1 }]
+    },
+    {
+      "name": "Db Overhead Tricep Extension",
+      "unit": "Kg",
+      "musclesHit": [{ "muscleName": "Triceps", "ratio": 1 }]
+    },
+    {
+      "name": "Bb Overhead Tricep Extension",
+      "unit": "Kg",
+      "musclesHit": [{ "muscleName": "Triceps", "ratio": 1 }]
+    },
+    {
+      "name": "Front Raise",
+      "unit": "Kg",
+      "musclesHit": [{ "muscleName": "Front Delt", "ratio": 1 }]
+    },
+    {
+      "name": "Db Lateral Raise",
+      "unit": "Kg",
+      "musclesHit": [{ "muscleName": "Side Delt", "ratio": 1 }]
+    },
+    {
+      "name": "Machine Lateral Raise",
+      "unit": "Kg",
+      "musclesHit": [{ "muscleName": "Side Delt", "ratio": 1 }]
+    },
+    {
+      "name": "Cable Lateral Raise",
+      "unit": "Kg",
+      "musclesHit": [{ "muscleName": "Side Delt", "ratio": 1 }]
+    },
+    {
+      "name": "Db Rear Delt Fly",
+      "unit": "Kg",
+      "musclesHit": [{ "muscleName": "Rear Delt", "ratio": 1 }]
+    },
+    {
+      "name": "Machine Rear Delt Fly",
+      "unit": "Kg",
+      "musclesHit": [{ "muscleName": "Rear Delt", "ratio": 1 }]
+    },
+    {
+      "name": "Cable Rear Delt Fly",
+      "unit": "Kg",
+      "musclesHit": [{ "muscleName": "Rear Delt", "ratio": 1 }]
+    },
+    {
+      "name": "Db Upright Row",
+      "unit": "Kg",
+      "musclesHit": [{ "muscleName": "Side Delt", "ratio": 1 }]
+    },
+    {
+      "name": "Bb Upright Row",
+      "unit": "Kg",
+      "musclesHit": [
+        { "muscleName": "Side Delt", "ratio": 0.8 },
+        { "muscleName": "Traps", "ratio": 0.5 },
+        { "muscleName": "Biceps", "ratio": 0.25 }
+      ]
+    },
+    {
+      "name": "Db Shrug",
+      "unit": "Kg",
+      "musclesHit": [{ "muscleName": "Traps", "ratio": 1 }]
+    },
+    {
+      "name": "Bb Shrug",
+      "unit": "Kg",
+      "musclesHit": [{ "muscleName": "Traps", "ratio": 1 }]
+    },
+    {
+      "name": "Face Pull",
+      "unit": "Kg",
+      "musclesHit": [
+        { "muscleName": "Rear Delt", "ratio": 0.8 },
+        { "muscleName": "Traps", "ratio": 0.5 },
+        { "muscleName": "Mid Back", "ratio": 0.4 }
+      ]
+    },
+    {
+      "name": "Lat Pulldown",
+      "unit": "Kg",
+      "musclesHit": [
+        { "muscleName": "Lats", "ratio": 1 },
+        { "muscleName": "Biceps", "ratio": 0.5 },
+        { "muscleName": "Mid Back", "ratio": 0.5 },
+        { "muscleName": "Traps", "ratio": 0.25 },
+        { "muscleName": "Brachialis", "ratio": 0.25 }
+      ]
+    },
+    {
+      "name": "Unilateral Cable Pulldown",
+      "unit": "Kg",
+      "musclesHit": [
+        [
+          { "muscleName": "Lats", "ratio": 1 },
+          { "muscleName": "Biceps", "ratio": 0.5 },
+          { "muscleName": "Brachialis", "ratio": 0.25 }
+        ]
+      ]
+    },
+    {
+      "name": "Pullup",
+      "unit": "Kg",
+      "musclesHit": [
+        { "muscleName": "Lats", "ratio": 1 },
+        { "muscleName": "Biceps", "ratio": 0.5 },
+        { "muscleName": "Mid Back", "ratio": 0.5 },
+        { "muscleName": "Traps", "ratio": 0.25 },
+        { "muscleName": "Brachialis", "ratio": 0.25 },
+        { "muscleName": "Abs", "ratio": 0.3 }
+      ]
+    },
+    {
+      "name": "Cable Row",
+      "unit": "Kg",
+      "musclesHit": [
+        { "muscleName": "Lats", "ratio": 0.5 },
+        { "muscleName": "Biceps", "ratio": 0.5 },
+        { "muscleName": "Mid Back", "ratio": 1 },
+        { "muscleName": "Traps", "ratio": 0.25 },
+        { "muscleName": "Brachialis", "ratio": 0.25 }
+      ]
+    },
+    {
+      "name": "Unilateral Cable Row",
+      "unit": "Kg",
+      "musclesHit": [
+        { "muscleName": "Lats", "ratio": 0.5 },
+        { "muscleName": "Biceps", "ratio": 0.5 },
+        { "muscleName": "Mid Back", "ratio": 1 },
+        { "muscleName": "Traps", "ratio": 0.25 },
+        { "muscleName": "Brachialis", "ratio": 0.25 }
+      ]
+    },
+    {
+      "name": "Db Row",
+      "unit": "Kg",
+      "musclesHit": [
+        { "muscleName": "Lats", "ratio": 0.5 },
+        { "muscleName": "Biceps", "ratio": 0.5 },
+        { "muscleName": "Mid Back", "ratio": 1 },
+        { "muscleName": "Traps", "ratio": 0.25 },
+        { "muscleName": "Brachialis", "ratio": 0.25 }
+      ]
+    },
+    {
+      "name": "Bb Row",
+      "unit": "Kg",
+      "musclesHit": [
+        { "muscleName": "Lats", "ratio": 0.5 },
+        { "muscleName": "Lower Back", "ratio": 0.7 },
+        { "muscleName": "Biceps", "ratio": 0.5 },
+        { "muscleName": "Mid Back", "ratio": 1 },
+        { "muscleName": "Traps", "ratio": 0.25 },
+        { "muscleName": "Brachialis", "ratio": 0.25 }
+      ]
+    },
+    {
+      "name": "Machine High Row",
+      "unit": "Kg",
+      "musclesHit": [
+        { "muscleName": "Lats", "ratio": 0.9 },
+        { "muscleName": "Biceps", "ratio": 0.5 },
+        { "muscleName": "Mid Back", "ratio": 8 },
+        { "muscleName": "Traps", "ratio": 0.25 },
+        { "muscleName": "Brachialis", "ratio": 0.25 }
+      ]
+    },
+    {
+      "name": "Machine Row",
+      "unit": "Kg",
+      "musclesHit": [
+        { "muscleName": "Lats", "ratio": 0.5 },
+        { "muscleName": "Biceps", "ratio": 0.5 },
+        { "muscleName": "Mid Back", "ratio": 1 },
+        { "muscleName": "Traps", "ratio": 0.25 },
+        { "muscleName": "Brachialis", "ratio": 0.25 }
+      ]
+    },
+    {
+      "name": "Hanging Leg Raise",
+      "unit": "Kg",
+      "musclesHit": [{ "muscleName": "Abs", "ratio": 1 }]
+    },
+    {
+      "name": "Crunch",
+      "unit": "Kg",
+      "musclesHit": [{ "muscleName": "Abs", "ratio": 1 }]
+    },
+    {
+      "name": "Squat",
+      "unit": "Kg",
+      "musclesHit": [
+        { "muscleName": "Quads", "ratio": 1 },
+        { "muscleName": "Glutes", "ratio": 0.75 },
+        { "muscleName": "Lower Back", "ratio": 0.5 },
+        { "muscleName": "Abs", "ratio": 0.4 }
+      ]
+    },
+    {
+      "name": "Hack Squat",
+      "unit": "Kg",
+      "musclesHit": [
+        { "muscleName": "Quads", "ratio": 1 },
+        { "muscleName": "Glutes", "ratio": 0.75 },
+        { "muscleName": "Lower Back", "ratio": 0.2 },
+        { "muscleName": "Abs", "ratio": 0.1 }
+      ]
+    },
+    {
+      "name": "Pendulum Squat",
+      "unit": "Kg",
+      "musclesHit": [
+        { "muscleName": "Quads", "ratio": 1 },
+        { "muscleName": "Glutes", "ratio": 0.75 },
+        { "muscleName": "Lower Back", "ratio": 0.4 },
+        { "muscleName": "Abs", "ratio": 0.2 }
+      ]
+    },
+    {
+      "name": "Bulgarian Split Squat",
+      "unit": "Kg",
+      "musclesHit": [
+        { "muscleName": "Quads", "ratio": 1 },
+        { "muscleName": "Glutes", "ratio": 0.75 },
+        { "muscleName": "Lower Back", "ratio": 0.2 },
+        { "muscleName": "Abs", "ratio": 0.1 }
+      ]
+    },
+    {
+      "name": "Leg Extension",
+      "unit": "Kg",
+      "musclesHit": [{ "muscleName": "Quads", "ratio": 1 }]
+    },
+    {
+      "name": "Leg Press",
+      "unit": "Kg",
+      "musclesHit": [
+        { "muscleName": "Quads", "ratio": 1 },
+        { "muscleName": "Glutes", "ratio": 0.75 }
+      ]
+    },
+    {
+      "name": "Lunges",
+      "unit": "Kg",
+      "musclesHit": [
+        { "muscleName": "Quads", "ratio": 1 },
+        { "muscleName": "Glutes", "ratio": 0.75 },
+        { "muscleName": "Lower Back", "ratio": 0.4 },
+        { "muscleName": "Abs", "ratio": 0.3 }
+      ]
+    },
+    {
+      "name": "Deadlift",
+      "unit": "Kg",
+      "musclesHit": [
+        { "muscleName": "Hamstrings", "ratio": 0.9 },
+        { "muscleName": "Glutes", "ratio": 0.9 },
+        { "muscleName": "Lower Back", "ratio": 0.75 },
+        { "muscleName": "Abs", "ratio": 0.4 }
+      ]
+    },
+    {
+      "name": "Romanian Deadlift",
+      "unit": "Kg",
+      "musclesHit": [
+        { "muscleName": "Hamstrings", "ratio": 0.9 },
+        { "muscleName": "Glutes", "ratio": 0.75 },
+        { "muscleName": "Lower Back", "ratio": 0.7 },
+        { "muscleName": "Abs", "ratio": 0.4 }
+      ]
+    },
+    {
+      "name": "Back Extension",
+      "unit": "Kg",
+      "musclesHit": [
+        { "muscleName": "Hamstrings", "ratio": 0.3 },
+        { "muscleName": "Glutes", "ratio": 0.5 },
+        { "muscleName": "Lower Back", "ratio": 1 },
+        { "muscleName": "Abs", "ratio": 0.1 }
+      ]
+    },
+    {
+      "name": "Lying Hamstring Curl",
+      "unit": "Kg",
+      "musclesHit": [
+        { "muscleName": "Hamstrings", "ratio": 1 },
+        { "muscleName": "Calves", "ratio": 0.3 }
+      ]
+    },
+    {
+      "name": "Seated Hamstring Curl",
+      "unit": "Kg",
+      "musclesHit": [
+        { "muscleName": "Hamstrings", "ratio": 1 },
+        { "muscleName": "Calves", "ratio": 0.2 }
+      ]
+    },
+    {
+      "name": "Standing Calf Raise",
+      "unit": "Kg",
+      "musclesHit": [{ "muscleName": "Calves", "ratio": 1 }]
+    },
+    {
+      "name": "Neck Curl",
+      "unit": "Kg",
+      "musclesHit": [{ "muscleName": "Neck", "ratio": 1 }]
+    },
+    {
+      "name": "Neck Extension",
+      "unit": "Kg",
+      "musclesHit": [{ "muscleName": "Neck", "ratio": 1 }]
+    },
+    {
+      "name": "Lateral Neck Curl",
+      "unit": "Kg",
+      "musclesHit": [{ "muscleName": "Neck", "ratio": 1 }]
+    },
+    {
+      "name": "Dips",
+      "unit": "Kg",
+      "musclesHit": [
+        { "muscleName": "Chest", "ratio": 0.8 },
+        { "muscleName": "Triceps", "ratio": 0.9 },
+        { "muscleName": "Front Delt", "ratio": 0.5 }
+      ]
+    }
+  ],
+  "METRIC": [
+    {
+      "name": "Body Weight",
+      "unit": "Kg",
+      "isNumeric": true
+    },
+    {
+      "name": "Calorie",
+      "unit": "Kcal",
+      "isNumeric": true
+    },
+    {
+      "name": "Protein",
+      "unit": "g",
+      "isNumeric": true
+    },
+    {
+      "name": "Carbohydrate",
+      "unit": "g",
+      "isNumeric": true
+    },
+    {
+      "name": "Fat",
+      "unit": "g",
+      "isNumeric": true
+    },
+    {
+      "name": "Waist Measurement",
+      "unit": "cm",
+      "isNumeric": true
+    }
+  ]
+}
