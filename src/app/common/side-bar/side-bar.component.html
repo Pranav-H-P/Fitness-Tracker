@@ -1,15 +1,18 @@
-<section class="flex flex-col absolute top-0 left-0 h-full bg-black/70 w-full transition-all"
-[ngClass]="{'hidden':!visible(), 'block':visible}"
-(click)="hideSideBar($event)">
-    <section class="flex flex-col absolute gap-5 pt-12 transition-all durat p-5
-    bg-surface-charcoal-950 h-full w-3/5 text-secondary-brown-800 text-3xl"
-    [ngClass]="{'top-0 left-0':visible(), '-top-full -left-full':!visible()}" (click)="contentClicked($event)">
-    
-    @for (item of sideBarElements; track i; let i = $index) {
-        <div class="flex gap-4" (click)="sectionChangeClicked(sideBarElements[i][2])">
+<section class="flex flex-col absolute top-0 left-0 h-[100vh] bg-black/70 w-[100vw] transition-all z-[9999]" [ngClass]="{
+    'opacity-100 pointer-events-auto': visible(),
+    'opacity-0 pointer-events-none': !visible()
+  }" (click)="hideSideBar($event)">
+    <section class="flex flex-col absolute gap-5 pt-12 transition-all durat p-5 px-0
+    bg-surface-charcoal-950 h-full w-3/5 text-secondary-brown-800 text-3xl" [ngClass]="{
+        'opacity-100 left-0 pointer-events-auto': visible(),
+    'opacity-0 -left-[100vw] pointer-events-none': !visible()
+    }" (click)="contentClicked($event)">
+
+        @for (item of sideBarElements; track i; let i = $index) {
+        <div class="flex gap-4 w-full px-2" (click)="sectionChangeClicked(i)">
             <img [src]="sideBarElements[i][3]" alt="[]">
-            <p [routerLink]="sideBarElements[i][1]" >{{sideBarElements[i][0]}}</p>
-    
+            <p>{{sideBarElements[i][0]}}</p>
+
         </div>
         }
 

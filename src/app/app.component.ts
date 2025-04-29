@@ -5,6 +5,7 @@ import { BottomBarComponent } from './common/bottom-bar/bottom-bar.component';
 import { SideBarComponent } from './common/side-bar/side-bar.component';
 import { HardwareService } from './services/hardware.service';
 import { SplashScreenComponent } from './common/splash-screen/splash-screen.component';
+import { HammerModule } from '@angular/platform-browser';
 
 @Component({
   selector: 'app-root',

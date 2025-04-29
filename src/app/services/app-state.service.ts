@@ -5,7 +5,8 @@ import { AppSectionState } from '../eums';
   providedIn: 'root',
 })
 export class AppStateService {
-  debug = true;
+  scrollMap: Map<string, number> = new Map();
+  lastTabMap: Map<string, number> = new Map();
 
   currentPage = signal<String>('TestTitle');
   sideBarVisible = signal<Boolean>(false);
@@ -37,5 +38,30 @@ export class AppStateService {
   }
   setAppSectionStateSignal(state: AppSectionState) {
     this.appSectionState.set(state);
+  }
+
+  // for remembering state through navigation
+  setScrollPos(navLink: string, yPos: number) {
+    this.scrollMap.set(navLink, yPos);
+  }
+  getScrollPos(navLink: string): number {
+    const pos = this.scrollMap.get(navLink);
+
+    if (pos) {
+      return pos;
+    }
+    return 0;
+  }
+
+  setLastTabPage(navLink: string, ind: number) {
+    this.lastTabMap.set(navLink, ind);
+  }
+  getLastTabPage(navLink: string): number {
+    const pos = this.lastTabMap.get(navLink);
+
+    if (pos) {
+      return pos;
+    }
+    return 0;
   }
 }

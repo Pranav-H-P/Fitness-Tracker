@@ -1,9 +1,13 @@
 <header class="flex bg-primary-red-950 text-secondary-brown-700 min-h-16 items-center">
-    
-    <div  class="mr-8 flex justify-center items-center p-2" (click)="showSideBar($event)">
-        <img src="assets/images/hamburger.svg" width="40" height="40"> 
-    </div> 
 
-    <p class="text-4xl">{{titleText()}}</p>
+    <div (swiperight)="showSideBar($event)" class="mr-8 flex justify-center items-center p-2"
+        (click)="showSideBar($event)">
+        <img src="assets/images/hamburger.svg" width="40" height="40">
+    </div>
+
+    <p class="text-wrap" [ngClass]="{'text-2xl': titleText().length < 18 && titleText().split(' ').length < 4,
+        'text-lg': !(titleText().length < 18 && titleText().split(' ').length < 4)
+    }">
+        {{titleText()}}</p>
 
 </header>

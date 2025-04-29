@@ -1,4 +1,4 @@
-<section class="flex flex-col h-[100%] bg-slate-900 text-surface-charcoal-100/90 p-5">
+<section class="flex flex-col h-[100%] bg-slate-900 text-surface-charcoal-100/90">
   <app-page-tab [tabData]="tabData" [currentTab]="currentTab()" (changeTab)="changeTab($event)"></app-page-tab>
 
   <div class="flex gap-5 p-2">
@@ -7,13 +7,19 @@
         'w-[100%]': currentTab() === 1
       }" class="p-3 rounded-xl min-h-8 bg-slate-950 focus:border-none focus:outline-none" />
 
-    @if(currentTab() === 0) {
+
     <!--Only for exercise tab-->
-    <button class="rounded-xl min-h-8 p-3 bg-surface-charcoal-700" (click)="toggleFilter()">
-      <img src="assets/images/filter_white.svg" alt="filters" />
+    <button class="rounded-xl bg-surface-charcoal-700 transition-all duration-75" [ngClass]="{
+      'opacity-100 pointer-events-auto p-3 min-h-8': currentTab() === 0,
+      'opacity-0 pointer-events-none w-0 m-0 p-0': currentTab() !== 0
+    }" (click)="toggleFilter()">
+      <img [ngClass]="{
+        'block': currentTab() === 0,
+        'hidden': currentTab() !== 0
+      }" src="assets/images/filter_white.svg" alt="filters" />
     </button>
 
-    }
+
   </div>
 
   <div class="fixed left-0 top-0 h-[100vh] w-[100vw] flex justify-center items-center z-40 transition-all bg-black/50"
@@ -36,11 +42,11 @@
   </div>
 
 
-  <div class="grid grid-cols-2 gap-4 m-4 overflow-y-auto max-h-[59vh]">
+  <div #scrollContainer class="grid grid-cols-2 gap-4 m-3 mt-4 overflow-y-auto max-h-[64vh]">
     @for (name of displayList(); track i; let i = $index) {
     <div (click)="openPopup(name)"
-      class="p-5 rounded-lg text-wrap whitespace-normal break-words h-auto bg-secondary-brown-800 text-center align-middle">
-      <p>{{ name }}</p>
+      class="flex p-5 rounded-lg text-wrap whitespace-normal break-words h-auto bg-secondary-brown-800 justify-center items-center">
+      <p class="text-center align-middle">{{ name }}</p>
     </div>
     }
   </div>

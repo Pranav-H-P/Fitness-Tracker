@@ -588,22 +588,22 @@
       "isNumeric": true
     },
     {
-      "name": "Calorie",
+      "name": "Calories",
       "unit": "Kcal",
       "isNumeric": true
     },
     {
-      "name": "Protein",
+      "name": "Protein Intake",
       "unit": "g",
       "isNumeric": true
     },
     {
-      "name": "Carbohydrate",
+      "name": "Carbohydrate Intake",
       "unit": "g",
       "isNumeric": true
     },
     {
-      "name": "Fat",
+      "name": "Fat Intake",
       "unit": "g",
       "isNumeric": true
     },

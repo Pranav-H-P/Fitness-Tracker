@@ -24,6 +24,7 @@
     "@capacitor/app": "^7.0.1",
     "@capacitor/core": "latest",
     "@capacitor/toast": "^7.0.1",
+    "hammerjs": "^2.0.8",
     "rxjs": "~7.8.0",
     "tslib": "^2.3.0",
     "zone.js": "~0.14.3"

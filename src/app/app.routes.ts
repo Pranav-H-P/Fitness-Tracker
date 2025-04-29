@@ -10,49 +10,49 @@ import { ExerciseEntryPageComponent } from './pages/workout/entry/exercise-entry
 import { MetricEntryPageComponent } from './pages/workout/entry/metric-entry-page/metric-entry-page.component';
 
 export const routes: Routes = [
-    {
-        path: '',
-        redirectTo: 'dashboard/exercise',
-        pathMatch:"full"
-    },
-    {
-        path: 'dashboard/exercise',
-        component: ExerciseStatsComponent
-    },
-    {
-        path: 'dashboard/diet',
-        component: DietStatsComponent
-    },
-    {
-        path: 'dashboard/graph',
-        component: GraphPageComponent
-    },
-    {
-        path: 'workout/entry',
-        component: EntryItemsPageComponent
-    },
-    {
-        path: 'workout/entry/exercise/:id',
-        component: ExerciseEntryPageComponent
-    },
-    {
-        path: 'workout/entry/metric/:id',
-        component: MetricEntryPageComponent
-    },
-    {
-        path: 'workout/create',
-        component: CreationListPageComponent
-    },
-    {
-        path: 'workout/logs',
-        component: LogPageComponent
-    },
-    {
-        path: 'diet/tracking',
-        component: DietStatsComponent
-    },
-    {
-        path: '**',
-        component: PageNotFoundComponent
-    }
+  {
+    path: '',
+    redirectTo: 'dashboard/exercise',
+    pathMatch: 'full',
+  },
+  {
+    path: 'dashboard/exercise',
+    component: ExerciseStatsComponent,
+  },
+  {
+    path: 'dashboard/diet',
+    component: DietStatsComponent,
+  },
+  {
+    path: 'dashboard/graph',
+    component: GraphPageComponent,
+  },
+  {
+    path: 'workout/entry',
+    component: EntryItemsPageComponent,
+  },
+  {
+    path: 'workout/entry/exercise/:name',
+    component: ExerciseEntryPageComponent,
+  },
+  {
+    path: 'workout/entry/metric/:name',
+    component: MetricEntryPageComponent,
+  },
+  {
+    path: 'workout/create',
+    component: CreationListPageComponent,
+  },
+  {
+    path: 'workout/logs',
+    component: LogPageComponent,
+  },
+  {
+    path: 'diet/tracking',
+    component: DietStatsComponent,
+  },
+  {
+    path: '**',
+    component: PageNotFoundComponent,
+  },
 ];
