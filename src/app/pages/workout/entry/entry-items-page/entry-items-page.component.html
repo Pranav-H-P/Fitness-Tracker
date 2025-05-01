@@ -7,31 +7,30 @@
         'w-[100%]': currentTab() === 1
       }" class="p-3 rounded-xl min-h-8 bg-slate-950 focus:border-none focus:outline-none" />
 
+    @if (currentTab() === 0) {
+    <button @horizontalSmush class="rounded-xl bg-surface-charcoal-700 p-3 min-h-8" (click)="toggleFilter()">
+      <img [ngClass]="{
+      'block': currentTab() === 0,
+      'hidden': currentTab() !== 0
+    }" src="assets/images/filter_white.svg" alt="filters" />
+    </button>
+    }
 
     <!--Only for exercise tab-->
-    <button class="rounded-xl bg-surface-charcoal-700 transition-all duration-75" [ngClass]="{
-      'opacity-100 pointer-events-auto p-3 min-h-8': currentTab() === 0,
-      'opacity-0 pointer-events-none w-0 m-0 p-0': currentTab() !== 0
-    }" (click)="toggleFilter()">
-      <img [ngClass]="{
-        'block': currentTab() === 0,
-        'hidden': currentTab() !== 0
-      }" src="assets/images/filter_white.svg" alt="filters" />
-    </button>
+
 
 
   </div>
 
-  <div class="fixed left-0 top-0 h-[100vh] w-[100vw] flex justify-center items-center z-40 transition-all bg-black/50"
-    [ngClass]="{
-    'opacity-100 pointer-events-auto': currentTab() === 0 && filterVisible(),
-    'opacity-0 pointer-events-none': currentTab() !== 0 || !filterVisible()
-  }" (click)="toggleFilter()">
-    <div class="p-5 bg-surface-charcoal-800 rounded-lg h-[60vh] w-[90vw]" (click)="$event.stopPropagation()">
+  @if (currentTab() === 0 && stateService.popUpName() === PopupType.MUSCLE_FILTER) {
+  <div @fade class="fixed left-0 top-0 h-[100vh] w-[100vw] flex justify-center items-center z-40 bg-black/50"
+    (click)="toggleFilter()">
+    <div class="bg-surface-charcoal-800 rounded-lg h-[65vh] w-[90vw] p-5" (click)="$event.stopPropagation()">
+
       <div class="grid grid-cols-2 gap-5 overflow-y-auto h-full w-full">
         @for (name of muscleList(); track i; let i = $index) {
         <div (click)="setMuscleFilter(name)"
-          class="p-2 py-5 rounded-lg text-wrap whitespace-normal h-auto text-center align-middle"
+          class="p-2 py-5 rounded-lg text-wrap whitespace-normal h-auto text-center align-middle shadow-custom-light"
           [ngClass]="{'bg-secondary-brown-500': muscleName() !== name, 'bg-secondary-brown-900': muscleName() === name}">
           <p>{{ name }}</p>
         </div>
@@ -40,19 +39,35 @@
 
     </div>
   </div>
+  }
 
 
-  <div #scrollContainer class="grid grid-cols-2 gap-4 m-3 mt-4 overflow-y-auto max-h-[64vh]">
+  @if (currentTab()===0) { <!--just for the transition animation to happen-->
+  <div @listFade #scrollContainer
+    class="grid grid-cols-2 gap-4 p-3 mt-4 overflow-y-auto overflow-x-visible max-h-[64vh]">
     @for (name of displayList(); track i; let i = $index) {
-    <div (click)="openPopup(name)"
-      class="flex p-5 rounded-lg text-wrap whitespace-normal break-words h-auto bg-secondary-brown-800 justify-center items-center">
+    <div @fade (click)="openPopup(name)"
+      class="flex p-5 shadow-custom-dark rounded-lg text-wrap whitespace-normal break-words h-auto bg-secondary-brown-800 justify-center items-center">
       <p class="text-center align-middle">{{ name }}</p>
     </div>
     }
   </div>
+  }@else{
+  <div @listFade #scrollContainer
+    class="grid grid-cols-2 gap-4 p-3 mt-4 overflow-y-auto overflow-x-visible max-h-[64vh]">
+    @for (name of displayList(); track i; let i = $index) {
+    <div @fade (click)="openPopup(name)"
+      class="flex p-5 shadow-custom-dark rounded-lg text-wrap whitespace-normal break-words h-auto bg-secondary-brown-800 justify-center items-center">
+      <p class="text-center align-middle">{{ name }}</p>
+    </div>
+    }
+  </div>
+  }
+
+
 
   @if(activeExercises().size > 0){
-  <div class="rounded-full fixed bottom-[11%] p-3 right-[8%] bg-secondary-brown-800 shadow-lg"
+  <div class="rounded-xl fixed bottom-[11%] p-3 right-[8%] bg-surface-charcoal-700 shadow-custom-light"
     (click)="openPopup(null)">
     <img src="assets/images/edit.svg" alt="+" width="40" height="40" />
   </div>

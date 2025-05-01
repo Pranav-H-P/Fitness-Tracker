@@ -1,4 +1,10 @@
-import { inject, Injectable, Signal, signal } from '@angular/core';
+import {
+  inject,
+  Injectable,
+  Signal,
+  signal,
+  WritableSignal,
+} from '@angular/core';
 import { ExerciseEntryData, Metric } from '../models';
 import { DatabaseService } from './database.service';
 import { ToastService } from './toast.service';
@@ -28,8 +34,6 @@ export class DataService {
       next: (res) => {
         const resArr = res.values;
         let newList: Array<string> = [];
-        console.log('search term' + searchTerm);
-        console.log(res);
         if (resArr && resArr?.length > 0) {
           resArr.forEach((obj) => {
             newList.push(obj.NAME);
@@ -84,25 +88,39 @@ export class DataService {
     });
   }
 
-  getTempExerciseDataSignal(): Signal<Map<string, ExerciseEntryData>> {
-    // for template rendering only
-    return this.tempExerciseEntryData;
-  }
-
-  getExerciseListSignal() {
+  // for template rendering only
+  getExerciseListSignal(): WritableSignal<Array<string>> {
     return this.exerciseList;
   }
 
-  getMetricListSignal() {
+  getMetricListSignal(): WritableSignal<Array<string>> {
     return this.metricList;
   }
 
-  getMuscleListSignal() {
+  getMuscleListSignal(): WritableSignal<Array<string>> {
     return this.muscleList;
   }
 
-  getExerciseFromTempData(name: string): ExerciseEntryData | undefined {
-    return this.tempExerciseEntryData().get(name);
+  getTempExerciseDataSignal(): WritableSignal<Map<string, ExerciseEntryData>> {
+    return this.tempExerciseEntryData;
+  }
+
+  getExerciseFromTempData(name: string): ExerciseEntryData {
+    const dat = this.tempExerciseEntryData().get(name);
+
+    if (dat) {
+      return dat;
+    }
+    const newEntry = {
+      exerciseName: name,
+      note: '',
+      timestamp: Date.now(),
+      sets: [],
+    };
+
+    this.setExerciseInTempData(newEntry);
+
+    return newEntry;
   }
 
   setExerciseInTempData(exData: ExerciseEntryData) {

@@ -1,5 +1,67 @@
-<section (swipeleft)="swipeLeft()" (swiperight)="swipeRight()"
-    class="flex flex-col h-[100%] bg-slate-900 text-surface-charcoal-100/90 p-5">
+<section class="flex flex-col h-[100%] bg-slate-900 text-surface-charcoal-100/90 p-2" (swipeleft)="swipeLeft()"
+    (swiperight)="swipeRight()">
+    <div class="flex justify-between items-center">
+        <button class="p-3 px-4 bg-surface-charcoal-700 rounded-lg text-lg" (click)="location.back();">Back</button>
+        <div class="flex justify-between m-0">
+            @for (exercise of tempExerciseMap().keys(); track i; let i = $index) {
+            @if(tempExerciseMap().get(exercise)?.exerciseName === exerciseName){
+
+            <img src="assets/images/radio_checked.svg" alt="o" class="h-2 w-2">
+            }@else {
+            <img src="assets/images/radio_outline.svg" alt="." class="h-2 w-2">
+            }
+            }
+        </div>
+        <button class="p-3 px-4 bg-primary-red-500 rounded-lg text-lg" (click)="deleteExerciseData()">Delete</button>
+    </div>
+
+    <div class="mt-5 p-3 rounded-md bg-surface-charcoal-900 shadow-custom-dark">
 
 
+
+        <div class="flex flex-col relative h-28 w-full">
+            @if (bestIndex()===0) {
+            <div @fade (swipeleft)="toggleBestIndex()" (swiperight)="toggleBestIndex()"
+                class='absolute flex flex-col w-full'>
+                <p class="text-4xl">Recent Best</p>
+                <div class="flex flex-col pl-2">
+                    <p>Load: {{bestSet().weight + ' ' + unit()}}</p>
+                    <p>Reps: {{bestSet().reps}}</p>
+                </div>
+            </div>
+
+
+            }@else {
+            <div @fade (swipeleft)="toggleBestIndex()" (swiperight)="toggleBestIndex()"
+                class=' absolute flex flex-col w-full'>
+                <p class="text-4xl">Last Best</p>
+                <div class="flex flex-col pl-2">
+                    <p>Load: {{bestSet().weight + ' ' + unit()}}</p>
+                    <p>Reps: {{bestSet().reps}}</p>
+                </div>
+
+            </div>
+
+
+            }
+        </div>
+
+
+
+
+
+        <div class="w-full h-1 rounded-xl bg-black my-2"></div>
+        <p class="text-4xl">Last Note</p>
+        <div class="flex flex-col h-16 overflow-y-auto">
+
+            <p class="text-wrap">{{lastNote()}}</p>
+        </div>
+
+    </div>
+
+    <div class="flex flex-col m-5">
+        @for (set of exerciseData().sets; track i; let i = $index) {
+
+        }
+    </div>
 </section>

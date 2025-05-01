@@ -16,6 +16,8 @@ import { DataService } from '../../../../services/data.service';
 import { NgClass } from '@angular/common';
 import { Router } from '@angular/router';
 import { AppStateService } from '../../../../services/app-state.service';
+import { PopupType } from '../../../../eums';
+import { animate, style, transition, trigger } from '@angular/animations';
 
 @Component({
   selector: 'app-entry-items-page',
@@ -23,6 +25,38 @@ import { AppStateService } from '../../../../services/app-state.service';
   imports: [PageTabComponent, FormsModule, NgClass],
   templateUrl: './entry-items-page.component.html',
   styleUrl: './entry-items-page.component.scss',
+  animations: [
+    trigger('fade', [
+      transition(':enter', [
+        style({ opacity: 0 }),
+        animate('150ms ease-in', style({ opacity: 100 })),
+      ]),
+      transition(':leave', [
+        style({ opacity: 100 }),
+        animate('150ms ease-in', style({ opacity: 0 })),
+      ]),
+    ]),
+    trigger('listFade', [
+      transition(':enter', [
+        style({ opacity: 0 }),
+        animate('250ms ease-in', style({ opacity: 100 })),
+      ]),
+      transition(':leave', [
+        style({ opacity: 100 }),
+        animate('0ms ease-in', style({ opacity: 0 })),
+      ]),
+    ]),
+    trigger('horizontalSmush', [
+      transition(':enter', [
+        style({ width: 0, padding: 0, margin: 0 }),
+        animate('75ms ease-in', style({})),
+      ]),
+      transition(':leave', [
+        style({}),
+        animate('75ms ease-in', style({ width: 0, padding: 0, margin: 0 })),
+      ]),
+    ]),
+  ],
 })
 export class EntryItemsPageComponent implements AfterViewInit {
   dataService = inject(DataService);
@@ -55,6 +89,8 @@ export class EntryItemsPageComponent implements AfterViewInit {
   pageUrl: string = '';
 
   @ViewChild('scrollContainer') scrollContainer: ElementRef = {} as ElementRef;
+
+  readonly PopupType = PopupType;
 
   constructor() {
     this.stateService.setCurrentPage('Entry');
@@ -109,11 +145,11 @@ export class EntryItemsPageComponent implements AfterViewInit {
     this.saveScrollPos();
     if (this.currentTab() === 0) {
       if (name === null) {
-        name = '';
+        name = Array.from(this.activeExercises().keys()).pop() ?? '';
       }
-      this.router.navigate(['workout/entry/exercise/' + name]);
+      this.router.navigateByUrl('workout/entry/exercise/' + name);
     } else {
-      this.router.navigate(['workout/entry/metric/' + name]);
+      this.router.navigateByUrl('workout/entry/metric/' + name);
     }
   }
 
@@ -127,7 +163,16 @@ export class EntryItemsPageComponent implements AfterViewInit {
 
   toggleFilter() {
     this.dataService.updateMuscleList();
-    this.filterVisible.update((val) => !val);
+    if (this.stateService.popUpName() === PopupType.MUSCLE_FILTER) {
+      this.stateService.clearPopup();
+    } else {
+      this.stateService.setPopup(PopupType.MUSCLE_FILTER);
+    }
+    console.log(`condition=>
+      ${
+        this.currentTab() === 0 &&
+        this.stateService.popUpName() === PopupType.MUSCLE_FILTER
+      }`);
   }
 
   updateExerciseList() {

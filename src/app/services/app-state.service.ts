@@ -1,10 +1,19 @@
-import { Injectable, Signal, signal } from '@angular/core';
-import { AppSectionState } from '../eums';
+import {
+  inject,
+  Injectable,
+  NgZone,
+  Signal,
+  signal,
+  WritableSignal,
+} from '@angular/core';
+import { AppSectionState, PopupType } from '../eums';
 
 @Injectable({
   providedIn: 'root',
 })
 export class AppStateService {
+  ngZone = inject(NgZone);
+
   scrollMap: Map<string, number> = new Map();
   lastTabMap: Map<string, number> = new Map();
 
@@ -12,9 +21,11 @@ export class AppStateService {
   sideBarVisible = signal<Boolean>(false);
   appSectionState = signal<AppSectionState>(AppSectionState.DASHBOARD); // if its in dashboard, exercise, diet or settings section
 
+  popUpName = signal<PopupType | null>(null);
+
   constructor() {}
 
-  getCurrentPageSignal(): Signal<String> {
+  getCurrentPageSignal(): WritableSignal<String> {
     return this.currentPage;
   }
 
@@ -30,12 +41,17 @@ export class AppStateService {
     this.sideBarVisible.set(false);
   }
 
-  getSideBarStateSignal(): Signal<Boolean> {
+  getSideBarStateSignal(): WritableSignal<Boolean> {
     return this.sideBarVisible;
   }
-  getAppSectionStateSignal(): Signal<AppSectionState> {
+  getAppSectionStateSignal(): WritableSignal<AppSectionState> {
     return this.appSectionState;
   }
+
+  getPopupSignal(): WritableSignal<string | null> {
+    return this.popUpName;
+  }
+
   setAppSectionStateSignal(state: AppSectionState) {
     this.appSectionState.set(state);
   }
@@ -63,5 +79,17 @@ export class AppStateService {
       return pos;
     }
     return 0;
+  }
+
+  setPopup(name: PopupType) {
+    this.ngZone.run(() => {
+      // change detection doesnt work when the back button is pressed
+      this.popUpName.set(name);
+    });
+  }
+  clearPopup() {
+    this.ngZone.run(() => {
+      this.popUpName.set(null);
+    });
   }
 }

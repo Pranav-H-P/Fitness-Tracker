@@ -88,12 +88,11 @@ export class DatabaseService {
     await this.db.execute(exerciseEntrySchema);
     await this.db.execute(metricEntrySchema);
     await this.db.execute(muscleSchema);
-    console.log('creating done');
   }
 
   async checkTableEmpty(tableName: string): Promise<boolean> {
     const res = await this.db.query(`SELECT * FROM ${tableName} LIMIT 1`);
-    console.log(res.values);
+
     if (res.values && res.values?.length > 0) {
       return false;
     }
@@ -108,7 +107,6 @@ export class DatabaseService {
       this.tableNames.map((name) => this.checkTableEmpty(name))
     );
     const allEmpty = emptyStatuses.every((status) => status);
-    console.log(emptyStatuses);
 
     if (allEmpty) {
       try {
@@ -140,12 +138,8 @@ export class DatabaseService {
           ...musclePromises,
           ...exercisePromises,
         ]);
-
-        console.log(data['EXERCISE']);
-        console.log('populating done');
       } catch (err) {
         this.toastService.showToast('Error fetching predefined data!');
-        console.log('populating done', err);
       }
     }
   }
@@ -154,16 +148,11 @@ export class DatabaseService {
     searchTerm?: string,
     muscleName?: string | null
   ): Observable<DBSQLiteValues> {
-    console.log('fetching ex list');
-
     (async () => {
       const t1 = await this.db.query(`SELECT * FROM EXERCISE;`);
       const t2 = await this.db.query(
         `SELECT * FROM EXERCISE, JSON_EACH(EXERCISE.MUSCLES_HIT);`
       );
-
-      console.log(t1);
-      console.log(t2);
     })();
 
     if (!searchTerm) {

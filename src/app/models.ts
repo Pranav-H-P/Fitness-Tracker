@@ -7,13 +7,13 @@ export interface NavButtonData {
 export interface ExerciseSetData {
   weight: string;
   reps: string;
-  timestamp: Date;
+  timestamp: number;
 }
 
 export interface ExerciseEntryData {
   id?: number;
   exerciseName: string;
-  timestamp: Date;
+  timestamp: number;
   sets: Array<ExerciseSetData>;
   note: string;
 }
@@ -44,7 +44,7 @@ export interface MetricEntryData {
   id?: number;
   metricName: string;
   entry: string;
-  timestamp: Date;
+  timestamp: number;
   note: string;
 }
 

@@ -79,7 +79,7 @@
       ]
     },
     {
-      "name": "Cable (Rope) Bicep Curl",
+      "name": "Cable [Rope] Bicep Curl",
       "unit": "Kg",
       "musclesHit": [
         { "muscleName": "Biceps", "ratio": 1 },
@@ -87,7 +87,7 @@
       ]
     },
     {
-      "name": "Cable (Bar) Bicep Curl",
+      "name": "Cable [Bar] Bicep Curl",
       "unit": "Kg",
       "musclesHit": [
         { "muscleName": "Biceps", "ratio": 1 },
@@ -103,7 +103,7 @@
       ]
     },
     {
-      "name": "Cable (Rope) Hammer Curl",
+      "name": "Cable [Rope] Hammer Curl",
       "unit": "Kg",
       "musclesHit": [
         { "muscleName": "Brachialis", "ratio": 1 },
@@ -224,22 +224,22 @@
       "musclesHit": [{ "muscleName": "Chest", "ratio": 1 }]
     },
     {
-      "name": "Cable (Rope) Tricep Extension",
+      "name": "Cable [Rope] Tricep Extension",
       "unit": "Kg",
       "musclesHit": [{ "muscleName": "Triceps", "ratio": 1 }]
     },
     {
-      "name": "Cable (Bar) Tricep Extension",
+      "name": "Cable [Bar] Tricep Extension",
       "unit": "Kg",
       "musclesHit": [{ "muscleName": "Triceps", "ratio": 1 }]
     },
     {
-      "name": "Tricep Pushdown (Rope)",
+      "name": "Tricep Pushdown [Rope]",
       "unit": "Kg",
       "musclesHit": [{ "muscleName": "Triceps", "ratio": 1 }]
     },
     {
-      "name": "Tricep Pushdown (Bar)",
+      "name": "Tricep Pushdown [Bar]",
       "unit": "Kg",
       "musclesHit": [{ "muscleName": "Triceps", "ratio": 1 }]
     },

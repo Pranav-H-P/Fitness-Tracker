@@ -48,7 +48,6 @@ export class SideBarComponent {
     event.stopPropagation();
   }
   sectionChangeClicked(ind: number) {
-    console.log('change clicked ' + ind);
     this.stateService.setAppSectionStateSignal(
       this.sideBarElements[ind][2] as AppSectionState
     );
