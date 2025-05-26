@@ -11,7 +11,6 @@ import {
   FormControl,
   FormGroup,
   FormsModule,
-  NgModel,
   ReactiveFormsModule,
   Validators,
 } from '@angular/forms';
@@ -49,12 +48,12 @@ export class ExerciseEntryPageComponent implements OnInit {
 
   readonly PopupType = PopupType;
 
-  setForm = new FormGroup({
-    load: new FormControl('', [
+  setForm = this.formBuilder.group({
+    load: this.formBuilder.control('', [
       Validators.required,
       Validators.pattern('^(?!$)[0-9]*.?[0-9]*$'), // decimal values
     ]),
-    reps: new FormControl('', [
+    reps: this.formBuilder.control('', [
       Validators.required,
       Validators.pattern('^[0-9]+$'), // just integers
     ]),

@@ -1,5 +1,10 @@
 import { inject, Injectable, signal, WritableSignal } from '@angular/core';
-import { ExerciseEntryData, ExerciseSetData, Metric } from '../models';
+import {
+  ExerciseEntryData,
+  ExerciseSetData,
+  Metric,
+  MetricEntryData,
+} from '../models';
 import { DatabaseService } from './database.service';
 import { ToastService } from './toast.service';
 import { catchError, map, Observable, of, timestamp } from 'rxjs';
@@ -256,6 +261,72 @@ export class DataService {
       }),
       catchError((err) => {
         return of(null);
+      })
+    );
+  }
+  saveMetricEntry(metricName: string, data: string, note: string) {
+    this.databaseService.saveTodaysMetric(metricName, data, note);
+  }
+
+  deleteTodaysMetricEntry(metricName: string) {
+    this.databaseService.deleteTodaysMetric(metricName);
+  }
+
+  getTodaysMetricEntry(metricName: string): Observable<MetricEntryData> {
+    return this.databaseService.getTodaysMetric(metricName).pipe(
+      map((data) => {
+        const returnArr = data.values;
+        if (returnArr && returnArr.length > 0) {
+          const entry = returnArr[0];
+          return {
+            metricName: metricName,
+            entry: entry['ENTRY'],
+            timestamp: entry['TIMESTAMP'],
+            note: entry['NOTE'],
+          };
+        }
+        return {
+          metricName: metricName,
+          entry: '',
+          timestamp: 0,
+          note: '',
+        };
+      }),
+      catchError((err) => {
+        return of({
+          metricName: metricName,
+          entry: '',
+          timestamp: 0,
+          note: '',
+        });
+      })
+    );
+  }
+
+  getMetricMetadata(metricName: string): Observable<Metric> {
+    return this.databaseService.getMetric(metricName).pipe(
+      map((data) => {
+        const returnArr = data.values;
+        if (returnArr && returnArr.length > 0) {
+          const metricData = returnArr[0];
+          return {
+            name: metricName,
+            unit: metricData['UNIT'],
+            isNumeric: metricData['IS_NUMERIC'],
+          };
+        }
+        return {
+          name: metricName,
+          unit: 'error',
+          isNumeric: false,
+        };
+      }),
+      catchError((err) => {
+        return of({
+          name: metricName,
+          unit: 'error',
+          isNumeric: false,
+        });
       })
     );
   }

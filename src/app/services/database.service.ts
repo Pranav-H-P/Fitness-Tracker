@@ -285,8 +285,43 @@ export class DatabaseService {
   ) {
     return from(
       this.db.query(
-        'SELECT * FROM EXERCISE_ENTRY WHERE EXERCISE_NAME = ? AND TIMESTAMP BETWEEN ? AND ? ORDER BY TIMESTAMP ASC'
+        'SELECT * FROM EXERCISE_ENTRY WHERE EXERCISE_NAME = ? AND TIMESTAMP BETWEEN ? AND ? ORDER BY TIMESTAMP ASC',
+        [exName, startTS, endTS]
       )
+    );
+  }
+
+  getTodaysMetric(metricName: string) {
+    const todayTS = new Date().setHours(0, 0, 0, 0).valueOf();
+    return from(
+      this.db.query(
+        'SELECT * FROM METRIC_ENTRY WHERE METRIC_NAME = ? AND TIMESTAMP = ?',
+        [metricName, todayTS]
+      )
+    );
+  }
+  saveTodaysMetric(metricName: string, data: string, note: string) {
+    const todayTS = new Date().setHours(0, 0, 0, 0).valueOf();
+    return from(
+      this.db.run(
+        'INSERT OR REPLACE INTO METRIC_ENTRY (METRIC_NAME, ENTRY, NOTE, TIMESTAMP) VALUES (?,?,?,?);',
+        [metricName, data, note, todayTS]
+      )
+    );
+  }
+  deleteTodaysMetric(metricName: string) {
+    const todayTS = new Date().setHours(0, 0, 0, 0).valueOf();
+    return from(
+      this.db.query(
+        'DELETE FROM METRIC_ENTRY WHERE METRIC_NAME = ? AND TIMESTAMP = ?',
+        [metricName, todayTS]
+      )
+    );
+  }
+
+  getMetric(metricName: string) {
+    return from(
+      this.db.query('SELECT * FROM METRIC WHERE NAME = ?;', [metricName])
     );
   }
 }

@@ -588,6 +588,11 @@
       "isNumeric": true
     },
     {
+      "name": "Mood",
+      "unit": "Nothing",
+      "isNumeric": false
+    },
+    {
       "name": "Calories",
       "unit": "Kcal",
       "isNumeric": true
