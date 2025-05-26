@@ -5,8 +5,8 @@ export interface NavButtonData {
 }
 
 export interface ExerciseSetData {
-  weight: string;
-  reps: string;
+  load: number;
+  reps: number;
   timestamp: number;
 }
 

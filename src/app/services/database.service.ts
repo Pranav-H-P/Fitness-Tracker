@@ -2,6 +2,7 @@ import { inject, Injectable, signal } from '@angular/core';
 import { Exercise, ExerciseEntryData, Metric } from '../models';
 import {
   CapacitorSQLite,
+  capSQLiteChanges,
   DBSQLiteValues,
   SQLiteConnection,
   SQLiteDBConnection,
@@ -42,10 +43,11 @@ export class DatabaseService {
     );
 
     await this.db.open();
-    await this.clearDb(); // remove before release
+    //await this.clearDb(); // TODO remove before release
     await this.createTables();
 
     await this.populateInitialDb();
+    await this.showAllEntryData();
   }
 
   async createTables() {
@@ -64,18 +66,20 @@ export class DatabaseService {
 
     const exerciseEntrySchema = `CREATE TABLE IF NOT EXISTS EXERCISE_ENTRY (
       ID INTEGER PRIMARY KEY AUTOINCREMENT,
-      EXERCISE_NAME STRING NOT NULL UNIQUE,
+      EXERCISE_NAME STRING NOT NULL,
       TIMESTAMP INTEGER NOT NULL,
       SETS TEXT NOT NULL,
-      NOTE STRING
+      NOTE STRING,
+      UNIQUE (EXERCISE_NAME, TIMESTAMP)
     );`;
 
     const metricEntrySchema = `CREATE TABLE IF NOT EXISTS METRIC_ENTRY (
       ID INTEGER PRIMARY KEY AUTOINCREMENT,
-      METRIC_NAME STRING NOT NULL UNIQUE,
+      METRIC_NAME STRING NOT NULL,
       TIMESTAMP INTEGER NOT NULL,
       ENTRY STRING NOT NULL,
-      NOTE STRING
+      NOTE STRING,
+      UNIQUE (METRIC_NAME, TIMESTAMP)
     );`;
 
     const muscleSchema = `CREATE TABLE IF NOT EXISTS MUSCLE (
@@ -144,17 +148,20 @@ export class DatabaseService {
     }
   }
 
+  async showAllEntryData() {
+    // for debug only
+    const exEntryData = await this.db.query('SELECT * FROM EXERCISE_ENTRY;');
+    const metricEntryData = await this.db.query('SELECT * FROM METRIC_ENTRY;');
+
+    console.log('EXERCISE ENTRIES');
+    console.log(exEntryData.values);
+    console.log('METRIC ENTRIES');
+    console.log(metricEntryData.values);
+  }
   getExerciseNameList(
     searchTerm?: string,
     muscleName?: string | null
   ): Observable<DBSQLiteValues> {
-    (async () => {
-      const t1 = await this.db.query(`SELECT * FROM EXERCISE;`);
-      const t2 = await this.db.query(
-        `SELECT * FROM EXERCISE, JSON_EACH(EXERCISE.MUSCLES_HIT);`
-      );
-    })();
-
     if (!searchTerm) {
       searchTerm = '';
     }
@@ -197,5 +204,89 @@ export class DatabaseService {
 
   updateExercise() {}
 
-  saveExerciseEntry(exData: ExerciseEntryData) {}
+  getExistingExerciseEntry(exName: string, dayTS: number) {
+    return from(
+      this.db.query(
+        'SELECT * FROM EXERCISE_ENTRY WHERE EXERCISE_NAME = ? AND TIMESTAMP = ?;',
+        [exName, dayTS]
+      )
+    );
+  }
+
+  saveExerciseEntry(exData: ExerciseEntryData): Observable<capSQLiteChanges> {
+    return from(
+      this.db.run(
+        'INSERT OR REPLACE INTO EXERCISE_ENTRY (EXERCISE_NAME, TIMESTAMP, SETS, NOTE) VALUES (?,?,?,?);',
+        [
+          exData.exerciseName,
+          exData.timestamp,
+          JSON.stringify(exData.sets),
+          exData.note,
+        ]
+      )
+    );
+  }
+
+  getLastExerciseEntrySet(exName: string) {
+    // for view in exercise entry
+    const todayTS = new Date().setHours(0, 0, 0, 0).valueOf();
+    return from(
+      this.db.query(
+        'SELECT SETS FROM EXERCISE_ENTRY WHERE EXERCISE_NAME = ? AND TIMESTAMP != ? ORDER BY TIMESTAMP DESC LIMIT 1',
+        [exName, todayTS]
+      )
+    );
+  }
+  getRecentExerciseEntrySets(exName: string, recentCount: number = 30) {
+    // for view in exercise entry
+    const todayTS = new Date().setHours(0, 0, 0, 0).valueOf();
+    return from(
+      this.db.query(
+        'SELECT SETS FROM EXERCISE_ENTRY WHERE EXERCISE_NAME = ?  AND TIMESTAMP != ? ORDER BY TIMESTAMP DESC LIMIT ?',
+        [exName, todayTS, recentCount]
+      )
+    );
+  }
+
+  getAllExerciseEntrySets(exName: string) {
+    // for view in exercise entry
+    // ascending since graph should start from first
+    return from(
+      this.db.query(
+        'SELECT SETS FROM EXERCISE_ENTRY WHERE EXERCISE_NAME = ? ORDER BY TIMESTAMP ASC',
+        [exName]
+      )
+    );
+  }
+  getLastExerciseEntryNote(exName: string) {
+    const todayTS = new Date().setHours(0, 0, 0, 0).valueOf();
+    return from(
+      this.db.query(
+        "SELECT NOTE FROM EXERCISE_ENTRY WHERE EXERCISE_NAME = ? AND NOTE != '' AND NOTE IS NOT NULL AND TIMESTAMP != ? ORDER BY TIMESTAMP DESC LIMIT 1",
+        [exName, todayTS]
+      )
+    );
+  }
+  getRecentExerciseEntry(exName: string, recentCount: number) {
+    // list is reversed since graph should start from first
+    const res = this.db.query(
+      'SELECT * FROM EXERCISE_ENTRY WHERE EXERCISE_NAME = ? ORDER BY TIMESTAMP DESC LIMIT ?',
+      [exName, recentCount]
+    );
+    const reversedRes = res.then((sqlResults) => {
+      sqlResults.values?.reverse();
+    });
+    return from(reversedRes);
+  }
+  getAllExerciseEntryByTimeWindow(
+    exName: string,
+    startTS: number,
+    endTS: number
+  ) {
+    return from(
+      this.db.query(
+        'SELECT * FROM EXERCISE_ENTRY WHERE EXERCISE_NAME = ? AND TIMESTAMP BETWEEN ? AND ? ORDER BY TIMESTAMP ASC'
+      )
+    );
+  }
 }

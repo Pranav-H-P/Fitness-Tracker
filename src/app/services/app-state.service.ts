@@ -7,6 +7,7 @@ import {
   WritableSignal,
 } from '@angular/core';
 import { AppSectionState, PopupType } from '../eums';
+import { ExerciseSetData } from '../models';
 
 @Injectable({
   providedIn: 'root',
@@ -16,6 +17,7 @@ export class AppStateService {
 
   scrollMap: Map<string, number> = new Map();
   lastTabMap: Map<string, number> = new Map();
+  currentSetMap: Map<string, { load: string; reps: string }> = new Map();
 
   currentPage = signal<String>('TestTitle');
   sideBarVisible = signal<Boolean>(false);
@@ -67,6 +69,19 @@ export class AppStateService {
       return pos;
     }
     return 0;
+  }
+
+  setCurrentSet(navLink: string, load: string, reps: string) {
+    this.currentSetMap.set(navLink, { load: load, reps: reps });
+  }
+  getCurrentSet(navLink: string): { load: string; reps: string } {
+    const data = this.currentSetMap.get(navLink);
+
+    if (data) {
+      return data;
+    } else {
+      return { load: '', reps: '' };
+    }
   }
 
   setLastTabPage(navLink: string, ind: number) {

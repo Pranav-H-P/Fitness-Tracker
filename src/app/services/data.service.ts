@@ -1,13 +1,9 @@
-import {
-  inject,
-  Injectable,
-  Signal,
-  signal,
-  WritableSignal,
-} from '@angular/core';
-import { ExerciseEntryData, Metric } from '../models';
+import { inject, Injectable, signal, WritableSignal } from '@angular/core';
+import { ExerciseEntryData, ExerciseSetData, Metric } from '../models';
 import { DatabaseService } from './database.service';
 import { ToastService } from './toast.service';
+import { catchError, map, Observable, of, timestamp } from 'rxjs';
+import { PreferenceService } from './preference.service';
 
 @Injectable({
   providedIn: 'root',
@@ -19,6 +15,7 @@ export class DataService {
   );
   databaseService = inject(DatabaseService);
   toastService = inject(ToastService);
+  preferenceService = inject(PreferenceService);
 
   exerciseList = signal<Array<string>>([]);
   metricList = signal<Array<string>>([]);
@@ -105,32 +102,161 @@ export class DataService {
     return this.tempExerciseEntryData;
   }
 
-  getExerciseFromTempData(name: string): ExerciseEntryData {
+  getExerciseFromTempData(name: string): Observable<ExerciseEntryData> {
     const dat = this.tempExerciseEntryData().get(name);
 
     if (dat) {
-      return dat;
+      return of(dat);
     }
-    const newEntry = {
+
+    let newEntry = {
       exerciseName: name,
       note: '',
-      timestamp: Date.now(),
+      timestamp: new Date().setHours(0, 0, 0, 0).valueOf(),
       sets: [],
     };
 
-    this.setExerciseInTempData(newEntry);
-
-    return newEntry;
+    return this.databaseService
+      .getExistingExerciseEntry(newEntry.exerciseName, newEntry.timestamp)
+      .pipe(
+        map((data) => {
+          const returnArr = data.values;
+          if (returnArr && returnArr.length > 0) {
+            newEntry.note = returnArr[0].NOTE;
+            newEntry.sets = JSON.parse(returnArr[0].SETS);
+          }
+          this.setExerciseInTempData(newEntry);
+          return newEntry;
+        }),
+        catchError((err) => {
+          this.setExerciseInTempData(newEntry);
+          return of(newEntry);
+        })
+      );
   }
 
   setExerciseInTempData(exData: ExerciseEntryData) {
     this.tempExerciseEntryData().set(exData.exerciseName, exData);
   }
   removeTempExercise(name: string) {
-    return this.tempExerciseEntryData().delete(name);
+    if (this.tempExerciseEntryData().delete(name)) {
+    }
   }
 
   saveExerciseEntry(exData: ExerciseEntryData) {
-    this.databaseService.saveExerciseEntry(exData);
+    this.databaseService.saveExerciseEntry(exData).subscribe({
+      next: (res) => {
+        this.tempExerciseEntryData().delete(exData.exerciseName);
+        this.toastService.showToast('Saved!');
+      },
+      error: (err) => {
+        this.toastService.showToast('Error Inserting Exercise Data!');
+      },
+    });
+  }
+
+  getBestSet(sets: Array<ExerciseSetData>): ExerciseSetData {
+    let bestSet: ExerciseSetData = {
+      load: 0,
+      reps: 0,
+      timestamp: sets[0].timestamp,
+    };
+    sets.forEach((set) => {
+      if (set.load >= bestSet.load) {
+        bestSet.load = set.load;
+
+        if (set.reps > bestSet.reps) {
+          bestSet.reps = set.reps;
+        }
+      }
+    });
+
+    return bestSet;
+  }
+
+  parseAndFlattenEntrySetsArray(arr: Array<string>): Array<ExerciseSetData> {
+    let flat: Array<ExerciseSetData> = [];
+    arr.forEach((str) => {
+      (JSON.parse(str) as Array<ExerciseSetData>).forEach((set) => {
+        flat.push(set);
+      });
+    });
+    return flat;
+  }
+
+  getLastBestSet(exName: string): Observable<ExerciseSetData | null> {
+    return this.databaseService.getLastExerciseEntrySet(exName).pipe(
+      map((data) => {
+        const returnArr = data.values;
+        if (returnArr && returnArr.length > 0) {
+          const sets: Array<ExerciseSetData> = JSON.parse(returnArr[0].SETS);
+
+          const bestSet = this.getBestSet(sets);
+
+          return bestSet;
+        }
+        return null;
+      }),
+      catchError((err) => {
+        return of(null);
+      })
+    );
+  }
+  getLastNote(exName: string): Observable<string> {
+    return this.databaseService.getLastExerciseEntryNote(exName).pipe(
+      map((data) => {
+        const returnArr = data.values;
+        if (returnArr && returnArr.length > 0) {
+          return returnArr[0].NOTE;
+        }
+        return 'None';
+      }),
+      catchError((err) => {
+        return of('None');
+      })
+    );
+  }
+
+  getRecentBestSet(exName: string): Observable<ExerciseSetData | null> {
+    return this.databaseService
+      .getRecentExerciseEntrySets(
+        exName,
+        this.preferenceService.getRecentEntryCount()
+      )
+      .pipe(
+        map((data) => {
+          const returnArr = data.values;
+          if (returnArr && returnArr.length > 0) {
+            const sets: Array<ExerciseSetData> = JSON.parse(returnArr[0].SETS);
+
+            const bestSet = this.getBestSet(sets);
+
+            return bestSet;
+          }
+          return null;
+        }),
+        catchError((err) => {
+          return of(null);
+        })
+      );
+  }
+  getAllTimeBest(exName: string): Observable<ExerciseSetData | null> {
+    return this.databaseService.getAllExerciseEntrySets(exName).pipe(
+      map((data) => {
+        const returnArr = data.values;
+        if (returnArr && returnArr.length > 0) {
+          const sets: Array<ExerciseSetData> =
+            this.parseAndFlattenEntrySetsArray(returnArr);
+
+          const bestSet = this.getBestSet(sets);
+
+          return bestSet;
+        }
+        return null;
+      }),
+      catchError((err) => {
+        return of(null);
+      })
+    );
   }
 }

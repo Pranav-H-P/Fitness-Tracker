@@ -4,13 +4,23 @@ import { ToastService } from '../../../../services/toast.service';
 import { DataService } from '../../../../services/data.service';
 import { AppStateService } from '../../../../services/app-state.service';
 import { ExerciseEntryData, ExerciseSetData } from '../../../../models';
-import { Location, NgClass } from '@angular/common';
+import { Location } from '@angular/common';
 import { animate, style, transition, trigger } from '@angular/animations';
+import {
+  FormBuilder,
+  FormControl,
+  FormGroup,
+  FormsModule,
+  NgModel,
+  ReactiveFormsModule,
+  Validators,
+} from '@angular/forms';
+import { PopupType } from '../../../../eums';
 
 @Component({
   selector: 'app-exercise-entry-page',
   standalone: true,
-  imports: [],
+  imports: [ReactiveFormsModule, FormsModule],
   templateUrl: './exercise-entry-page.component.html',
   styleUrl: './exercise-entry-page.component.scss',
   animations: [
@@ -33,8 +43,25 @@ export class ExerciseEntryPageComponent implements OnInit {
   dataService = inject(DataService);
   stateService = inject(AppStateService);
   location = inject(Location);
+  formBuilder = inject(FormBuilder);
 
   exerciseName: string = '';
+
+  readonly PopupType = PopupType;
+
+  setForm = new FormGroup({
+    load: new FormControl('', [
+      Validators.required,
+      Validators.pattern('^(?!$)[0-9]*.?[0-9]*$'), // decimal values
+    ]),
+    reps: new FormControl('', [
+      Validators.required,
+      Validators.pattern('^[0-9]+$'), // just integers
+    ]),
+  });
+
+  currentNote = '';
+
   tempExerciseMap = signal<Map<string, ExerciseEntryData>>(new Map());
   exerciseData = signal<ExerciseEntryData>({
     exerciseName: '',
@@ -42,11 +69,9 @@ export class ExerciseEntryPageComponent implements OnInit {
     timestamp: Date.now(),
     sets: [],
   });
-  bestSet = signal<ExerciseSetData>({
-    reps: '1',
-    weight: '225',
-    timestamp: -1,
-  });
+  lastBestSet = signal<ExerciseSetData | null>(null);
+  recentBestSet = signal<ExerciseSetData | null>(null);
+
   lastNote = signal<string>('None');
   unit = signal<string>('Kg');
   bestIndex = signal<number>(0); // to decide between last session and recent best
@@ -56,17 +81,38 @@ export class ExerciseEntryPageComponent implements OnInit {
       this.stateService.setCurrentPage(params['name']);
       this.exerciseName = params['name'];
       this.initExerciseData();
+      const currentSetData = this.stateService.getCurrentSet(this.router.url);
+      this.setForm.setValue(currentSetData);
     });
   }
 
   initExerciseData() {
     this.tempExerciseMap = this.dataService.getTempExerciseDataSignal();
-    this.exerciseData.set(
-      this.dataService.getExerciseFromTempData(this.exerciseName)
-    );
+    this.dataService
+      .getExerciseFromTempData(this.exerciseName) // guaranteed to return something
+      .subscribe((res) => {
+        this.exerciseData.set(res);
+        this.currentNote = res.note;
+      });
+
+    this.dataService.getLastBestSet(this.exerciseName).subscribe((res) => {
+      this.lastBestSet.set(res);
+    });
+    this.dataService.getRecentBestSet(this.exerciseName).subscribe((res) => {
+      this.recentBestSet.set(res);
+    });
+
+    this.dataService.getLastNote(this.exerciseName).subscribe((res) => {
+      this.lastNote.set(res);
+    });
   }
   swipeLeft() {
     // go to next
+    this.stateService.setCurrentSet(
+      this.router.url,
+      this.setForm.value.load ?? '',
+      this.setForm.value.reps ?? ''
+    );
     const size = this.tempExerciseMap().size;
     const tempArr = Array.from(this.tempExerciseMap().keys());
     const currInd = tempArr.indexOf(this.exerciseName);
@@ -84,7 +130,11 @@ export class ExerciseEntryPageComponent implements OnInit {
 
   swipeRight() {
     // go to previous
-
+    this.stateService.setCurrentSet(
+      this.router.url,
+      this.setForm.value.load ?? '',
+      this.setForm.value.reps ?? ''
+    );
     const size = this.tempExerciseMap().size;
     const tempArr = Array.from(this.tempExerciseMap().keys());
     const currInd = tempArr.indexOf(this.exerciseName);
@@ -99,12 +149,76 @@ export class ExerciseEntryPageComponent implements OnInit {
       });
     }
   }
-  toggleBestIndex() {
+  toggleBestIndex(event: Event) {
+    event.stopPropagation();
     this.bestIndex.update((val) => (val === 1 ? 0 : 1));
+  }
+
+  openDeletePopup() {
+    this.stateService.clearPopup();
+    this.stateService.setPopup(PopupType.DELETE_ACTIVE_ENTRY);
   }
 
   deleteExerciseData() {
     this.dataService.removeTempExercise(this.exerciseName);
+    this.stateService.clearPopup();
     this.location.back();
+  }
+
+  deleteSetData(ind: number) {
+    this.exerciseData().sets.splice(ind, 1);
+  }
+
+  openSavePopup() {
+    this.stateService.clearPopup();
+    if (this.exerciseData().sets.length > 0) {
+      this.stateService.setPopup(PopupType.SAVE_ACTIVE_ENTRY);
+    } else {
+      this.toastService.showToast('Nothing to Save!');
+    }
+  }
+
+  closePopup() {
+    this.stateService.clearPopup();
+  }
+  saveExerciseData() {
+    this.exerciseData().note = this.currentNote;
+    this.dataService.saveExerciseEntry(this.exerciseData());
+    this.stateService.clearPopup();
+    this.location.back();
+  }
+
+  goBack() {
+    this.stateService.setCurrentSet(
+      this.router.url,
+      this.setForm.value.load ?? '',
+      this.setForm.value.reps ?? ''
+    );
+    this.location.back();
+  }
+
+  addSet() {
+    console.log(this.setForm);
+    if (this.setForm.valid) {
+      this.exerciseData().sets.push({
+        load: Number.parseFloat(this.setForm.value.load ?? ''),
+        reps: Number.parseInt(this.setForm.value.reps ?? ''),
+        timestamp: Date.now(),
+      });
+    } else {
+      this.toastService.showToast('Invalid Input!');
+    }
+  }
+
+  getTime(timestamp: number): string {
+    const date = new Date(timestamp);
+
+    return date.toLocaleTimeString();
+  }
+
+  formatSetData(data: ExerciseSetData) {
+    return `${data.load} ${this.unit()} x ${data.reps} at ${this.getTime(
+      data.timestamp
+    )}`;
   }
 }

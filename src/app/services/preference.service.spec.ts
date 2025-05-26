@@ -1,13 +1,13 @@
 import { TestBed } from '@angular/core/testing';
 
-import { ObjectMapperService } from './object-mapper.service';
+import { PreferenceService } from './preference.service';
 
-describe('ObjectMapperService', () => {
-  let service: ObjectMapperService;
+describe('PreferenceService', () => {
+  let service: PreferenceService;
 
   beforeEach(() => {
     TestBed.configureTestingModule({});
-    service = TestBed.inject(ObjectMapperService);
+    service = TestBed.inject(PreferenceService);
   });
 
   it('should be created', () => {
