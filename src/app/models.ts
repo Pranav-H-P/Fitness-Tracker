@@ -38,6 +38,7 @@ export interface Metric {
   name: string;
   unit: string;
   isNumeric: boolean;
+  hidden?: boolean; // for read only metrics (diet related stuff that only the app can fill)
 }
 
 export interface MetricEntryData {

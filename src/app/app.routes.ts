@@ -8,6 +8,9 @@ import { DietStatsComponent } from './pages/dashboard/diet/diet-stats/diet-stats
 import { GraphPageComponent } from './pages/dashboard/graphs/graph-page/graph-page.component';
 import { ExerciseEntryPageComponent } from './pages/workout/entry/exercise-entry-page/exercise-entry-page.component';
 import { MetricEntryPageComponent } from './pages/workout/entry/metric-entry-page/metric-entry-page.component';
+import { CalendarViewPageComponent } from './pages/workout/logs/calendar-view-page/calendar-view-page.component';
+import { ExerciseCreationPageComponent } from './pages/workout/create/exercise-creation-page/exercise-creation-page.component';
+import { MetricCreationPageComponent } from './pages/workout/create/metric-creation-page/metric-creation-page.component';
 
 export const routes: Routes = [
   {
@@ -44,8 +47,20 @@ export const routes: Routes = [
     component: CreationListPageComponent,
   },
   {
+    path: 'workout/create/exercise/:name',
+    component: ExerciseCreationPageComponent,
+  },
+  {
+    path: 'workout/create/metric/:name',
+    component: MetricCreationPageComponent,
+  },
+  {
     path: 'workout/logs',
     component: LogPageComponent,
+  },
+  {
+    path: 'workout/logs/:name',
+    component: CalendarViewPageComponent,
   },
   {
     path: 'diet/tracking',

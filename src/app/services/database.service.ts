@@ -61,8 +61,9 @@ export class DatabaseService {
       ID INTEGER PRIMARY KEY AUTOINCREMENT,
       NAME STRING NOT NULL UNIQUE,
       UNIT STRING NOT NULL,
-      IS_NUMERIC INTEGER NOT NULL
-    );`;
+      IS_NUMERIC INTEGER NOT NULL,
+      HIDDEN INTEGER
+    );`; // hidden is for system metrics, like calories, macros, cannot be set by user directly
 
     const exerciseEntrySchema = `CREATE TABLE IF NOT EXISTS EXERCISE_ENTRY (
       ID INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -119,8 +120,8 @@ export class DatabaseService {
         );
         const metricPromises = data['METRIC'].map((metric: Metric) =>
           this.db.run(
-            'INSERT OR IGNORE INTO METRIC (NAME, UNIT, IS_NUMERIC) VALUES (?, ?, ?);',
-            [metric.name, metric.unit, metric.isNumeric]
+            'INSERT OR IGNORE INTO METRIC (NAME, UNIT, IS_NUMERIC, HIDDEN) VALUES (?, ?, ?, ?);',
+            [metric.name, metric.unit, metric.isNumeric, metric.hidden]
           )
         );
 
@@ -182,16 +183,29 @@ export class DatabaseService {
     }
   }
 
-  getMetricNameList(searchTerm?: string): Observable<DBSQLiteValues> {
+  getMetricNameList(
+    searchTerm?: string,
+    showHidden: boolean = false
+  ): Observable<DBSQLiteValues> {
     if (!searchTerm) {
       searchTerm = '';
     }
-    return from(
-      this.db.query(
-        "SELECT NAME FROM METRIC WHERE LOWER(NAME) LIKE '%' || LOWER(?) || '%' ORDER BY LOWER(NAME) ASC;",
-        [searchTerm]
-      )
-    );
+
+    if (showHidden) {
+      return from(
+        this.db.query(
+          "SELECT NAME FROM METRIC WHERE LOWER(NAME) LIKE '%' || LOWER(?) || '%' ORDER BY LOWER(NAME) ASC;",
+          [searchTerm]
+        )
+      );
+    } else {
+      return from(
+        this.db.query(
+          "SELECT NAME FROM METRIC WHERE LOWER(NAME) LIKE '%' || LOWER(?) || '%' AND (HIDDEN IS NULL OR HIDDEN = 0)  ORDER BY LOWER(NAME) ASC;",
+          [searchTerm]
+        )
+      );
+    }
   }
 
   getMuscleNameList(): Observable<DBSQLiteValues> {

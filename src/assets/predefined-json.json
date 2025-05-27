@@ -588,29 +588,28 @@
       "isNumeric": true
     },
     {
-      "name": "Mood",
-      "unit": "Nothing",
-      "isNumeric": false
-    },
-    {
       "name": "Calories",
       "unit": "Kcal",
-      "isNumeric": true
+      "isNumeric": true,
+      "hidden": true
     },
     {
       "name": "Protein Intake",
       "unit": "g",
-      "isNumeric": true
+      "isNumeric": true,
+      "hidden": true
     },
     {
       "name": "Carbohydrate Intake",
       "unit": "g",
-      "isNumeric": true
+      "isNumeric": true,
+      "hidden": true
     },
     {
       "name": "Fat Intake",
       "unit": "g",
-      "isNumeric": true
+      "isNumeric": true,
+      "hidden": true
     },
     {
       "name": "Waist Measurement",

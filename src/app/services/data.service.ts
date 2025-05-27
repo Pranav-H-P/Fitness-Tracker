@@ -330,4 +330,8 @@ export class DataService {
       })
     );
   }
+
+  updateExerciseMetadataList(searchTerm: string) {}
+
+  updateMetricMetadataList(searchTerm: string) {}
 }

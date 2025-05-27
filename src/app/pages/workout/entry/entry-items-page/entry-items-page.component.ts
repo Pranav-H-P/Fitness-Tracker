@@ -147,9 +147,13 @@ export class EntryItemsPageComponent implements AfterViewInit {
       if (name === null) {
         name = Array.from(this.activeExercises().keys()).pop() ?? '';
       }
-      this.router.navigateByUrl('workout/entry/exercise/' + name);
+      this.router.navigateByUrl(
+        this.tabData[this.currentTab()].popupLink + name
+      );
     } else {
-      this.router.navigateByUrl('workout/entry/metric/' + name);
+      this.router.navigateByUrl(
+        this.tabData[this.currentTab()].popupLink + name
+      );
     }
   }
 
