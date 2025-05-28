@@ -1,5 +1,6 @@
 import { inject, Injectable, signal, WritableSignal } from '@angular/core';
 import {
+  Exercise,
   ExerciseEntryData,
   ExerciseSetData,
   Metric,
@@ -15,8 +16,8 @@ import { PreferenceService } from './preference.service';
 })
 export class DataService {
   // unpersisted exerciseData
-  tempExerciseEntryData = signal<Map<string, ExerciseEntryData>>(
-    new Map<string, ExerciseEntryData>()
+  tempExerciseEntryData = signal<Map<number, ExerciseEntryData>>(
+    new Map<number, ExerciseEntryData>()
   );
   databaseService = inject(DatabaseService);
   toastService = inject(ToastService);
@@ -103,26 +104,27 @@ export class DataService {
     return this.muscleList;
   }
 
-  getTempExerciseDataSignal(): WritableSignal<Map<string, ExerciseEntryData>> {
+  getTempExerciseDataSignal(): WritableSignal<Map<number, ExerciseEntryData>> {
     return this.tempExerciseEntryData;
   }
 
-  getExerciseFromTempData(name: string): Observable<ExerciseEntryData> {
-    const dat = this.tempExerciseEntryData().get(name);
-
+  getExerciseFromTempData(id: number): Observable<ExerciseEntryData> {
+    const dat = this.tempExerciseEntryData().get(id);
+    console.log('returning dat:');
+    console.log(dat);
     if (dat) {
       return of(dat);
     }
 
     let newEntry = {
-      exerciseName: name,
+      exerciseId: id,
       note: '',
       timestamp: new Date().setHours(0, 0, 0, 0).valueOf(),
       sets: [],
     };
 
     return this.databaseService
-      .getExistingExerciseEntry(newEntry.exerciseName, newEntry.timestamp)
+      .getExistingExerciseEntry(newEntry.exerciseId, newEntry.timestamp)
       .pipe(
         map((data) => {
           const returnArr = data.values;
@@ -141,17 +143,19 @@ export class DataService {
   }
 
   setExerciseInTempData(exData: ExerciseEntryData) {
-    this.tempExerciseEntryData().set(exData.exerciseName, exData);
+    console.log('setting');
+    console.log(this.tempExerciseEntryData());
+    this.tempExerciseEntryData().set(exData.exerciseId, exData);
   }
-  removeTempExercise(name: string) {
-    if (this.tempExerciseEntryData().delete(name)) {
+  removeTempExercise(id: number) {
+    if (this.tempExerciseEntryData().delete(id)) {
     }
   }
 
   saveExerciseEntry(exData: ExerciseEntryData) {
     this.databaseService.saveExerciseEntry(exData).subscribe({
       next: (res) => {
-        this.tempExerciseEntryData().delete(exData.exerciseName);
+        this.tempExerciseEntryData().delete(exData.exerciseId);
         this.toastService.showToast('Saved!');
       },
       error: (err) => {
@@ -189,8 +193,8 @@ export class DataService {
     return flat;
   }
 
-  getLastBestSet(exName: string): Observable<ExerciseSetData | null> {
-    return this.databaseService.getLastExerciseEntrySet(exName).pipe(
+  getLastBestSet(exId: number): Observable<ExerciseSetData | null> {
+    return this.databaseService.getLastExerciseEntrySet(exId).pipe(
       map((data) => {
         const returnArr = data.values;
         if (returnArr && returnArr.length > 0) {
@@ -207,8 +211,8 @@ export class DataService {
       })
     );
   }
-  getLastNote(exName: string): Observable<string> {
-    return this.databaseService.getLastExerciseEntryNote(exName).pipe(
+  getLastNote(exId: number): Observable<string> {
+    return this.databaseService.getLastExerciseEntryNote(exId).pipe(
       map((data) => {
         const returnArr = data.values;
         if (returnArr && returnArr.length > 0) {
@@ -222,10 +226,10 @@ export class DataService {
     );
   }
 
-  getRecentBestSet(exName: string): Observable<ExerciseSetData | null> {
+  getRecentBestSet(exId: number): Observable<ExerciseSetData | null> {
     return this.databaseService
       .getRecentExerciseEntrySets(
-        exName,
+        exId,
         this.preferenceService.getRecentEntryCount()
       )
       .pipe(
@@ -245,8 +249,8 @@ export class DataService {
         })
       );
   }
-  getAllTimeBest(exName: string): Observable<ExerciseSetData | null> {
-    return this.databaseService.getAllExerciseEntrySets(exName).pipe(
+  getAllTimeBest(exId: number): Observable<ExerciseSetData | null> {
+    return this.databaseService.getAllExerciseEntrySets(exId).pipe(
       map((data) => {
         const returnArr = data.values;
         if (returnArr && returnArr.length > 0) {
@@ -264,29 +268,30 @@ export class DataService {
       })
     );
   }
-  saveMetricEntry(metricName: string, data: string, note: string) {
-    this.databaseService.saveTodaysMetric(metricName, data, note);
+  saveMetricEntry(metricId: number, data: string, note: string) {
+    this.databaseService.saveMetricEntry(metricId, data, note);
   }
 
-  deleteTodaysMetricEntry(metricName: string) {
-    this.databaseService.deleteTodaysMetric(metricName);
+  deleteTodaysMetricEntry(metricId: number) {
+    const todayTS = new Date().setHours(0, 0, 0, 0).valueOf();
+    this.databaseService.deleteMetricEntry(metricId, todayTS);
   }
 
-  getTodaysMetricEntry(metricName: string): Observable<MetricEntryData> {
-    return this.databaseService.getTodaysMetric(metricName).pipe(
+  getTodaysMetricEntry(metricId: number): Observable<MetricEntryData> {
+    return this.databaseService.getTodaysMetric(metricId).pipe(
       map((data) => {
         const returnArr = data.values;
         if (returnArr && returnArr.length > 0) {
           const entry = returnArr[0];
           return {
-            metricName: metricName,
+            metricId: metricId,
             entry: entry['ENTRY'],
             timestamp: entry['TIMESTAMP'],
             note: entry['NOTE'],
           };
         }
         return {
-          metricName: metricName,
+          metricId: metricId,
           entry: '',
           timestamp: 0,
           note: '',
@@ -294,7 +299,7 @@ export class DataService {
       }),
       catchError((err) => {
         return of({
-          metricName: metricName,
+          metricId: metricId,
           entry: '',
           timestamp: 0,
           note: '',
@@ -303,35 +308,94 @@ export class DataService {
     );
   }
 
-  getMetricMetadata(metricName: string): Observable<Metric> {
-    return this.databaseService.getMetric(metricName).pipe(
+  getMetricMetadataByName(metricName: string): Observable<Metric | null> {
+    return this.databaseService.getMetricByName(metricName).pipe(
       map((data) => {
         const returnArr = data.values;
         if (returnArr && returnArr.length > 0) {
           const metricData = returnArr[0];
           return {
+            id: metricData['ID'],
             name: metricName,
             unit: metricData['UNIT'],
             isNumeric: metricData['IS_NUMERIC'],
           };
         }
-        return {
-          name: metricName,
-          unit: 'error',
-          isNumeric: false,
-        };
+        return null;
       }),
       catchError((err) => {
-        return of({
-          name: metricName,
-          unit: 'error',
-          isNumeric: false,
-        });
+        return of(null);
+      })
+    );
+  }
+  getMetricMetadataById(metricId: number): Observable<Metric | null> {
+    return this.databaseService.getMetricById(metricId).pipe(
+      map((data) => {
+        const returnArr = data.values;
+        if (returnArr && returnArr.length > 0) {
+          const metricData = returnArr[0];
+          return {
+            id: metricData['ID'],
+            name: metricData['NAME'],
+            unit: metricData['UNIT'],
+            isNumeric: metricData['IS_NUMERIC'],
+          };
+        }
+        return null;
+      }),
+      catchError((err) => {
+        return of(null);
+      })
+    );
+  }
+  getExerciseMetadataByName(exerciseName: string): Observable<Exercise | null> {
+    return this.databaseService.getExerciseByName(exerciseName).pipe(
+      map((data) => {
+        console.log('exercise metadata');
+        console.log(data);
+        const returnArr = data.values;
+        if (returnArr && returnArr.length > 0) {
+          const exerciseData = returnArr[0];
+          return {
+            id: exerciseData['ID'],
+            name: exerciseData['NAME'],
+            unit: exerciseData['UNIT'],
+            musclesHit: JSON.parse(exerciseData['MUSCLES_HIT']),
+          };
+        }
+        return null;
+      }),
+      catchError((err) => {
+        return of(null);
+      })
+    );
+  }
+  getExerciseMetadataById(exerciseId: number): Observable<Exercise | null> {
+    return this.databaseService.getExerciseById(exerciseId).pipe(
+      map((data) => {
+        const returnArr = data.values;
+        if (returnArr && returnArr.length > 0) {
+          const exerciseData = returnArr[0];
+          return {
+            id: exerciseData['ID'],
+            name: exerciseData['NAME'],
+            unit: exerciseData['UNIT'],
+            musclesHit: JSON.parse(exerciseData['MUSCLES_HIT']),
+          };
+        }
+        return null;
+      }),
+      catchError((err) => {
+        return of(null);
       })
     );
   }
 
-  updateExerciseMetadataList(searchTerm: string) {}
+  saveMetricMetadata(metric: Metric) {
+    this.databaseService.saveMetricMetadata(metric);
+  }
 
-  updateMetricMetadataList(searchTerm: string) {}
+  deleteMetricMetadata(metricId: number) {
+    this.databaseService.deleteMetricMetadata(metricId);
+  }
 }

@@ -1,5 +1,10 @@
 import { inject, Injectable, signal } from '@angular/core';
-import { Exercise, ExerciseEntryData, Metric } from '../models';
+import {
+  Exercise,
+  ExerciseEntryData,
+  FractionalSetRatio,
+  Metric,
+} from '../models';
 import {
   CapacitorSQLite,
   capSQLiteChanges,
@@ -43,7 +48,8 @@ export class DatabaseService {
     );
 
     await this.db.open();
-    //await this.clearDb(); // TODO remove before release
+    await this.db.execute(`PRAGMA foreign_keys = ON;`);
+    await this.clearDb(); // TODO remove before release
     await this.createTables();
 
     await this.populateInitialDb();
@@ -67,20 +73,22 @@ export class DatabaseService {
 
     const exerciseEntrySchema = `CREATE TABLE IF NOT EXISTS EXERCISE_ENTRY (
       ID INTEGER PRIMARY KEY AUTOINCREMENT,
-      EXERCISE_NAME STRING NOT NULL,
+      EXERCISE_ID INTEGER NOT NULL,
       TIMESTAMP INTEGER NOT NULL,
       SETS TEXT NOT NULL,
       NOTE STRING,
-      UNIQUE (EXERCISE_NAME, TIMESTAMP)
+      UNIQUE (EXERCISE_ID, TIMESTAMP),
+      FOREIGN KEY (EXERCISE_ID) REFERENCES EXERCISE(ID) ON DELETE CASCADE
     );`;
 
     const metricEntrySchema = `CREATE TABLE IF NOT EXISTS METRIC_ENTRY (
       ID INTEGER PRIMARY KEY AUTOINCREMENT,
-      METRIC_NAME STRING NOT NULL,
+      METRIC_ID INTEGER NOT NULL,
       TIMESTAMP INTEGER NOT NULL,
       ENTRY STRING NOT NULL,
       NOTE STRING,
-      UNIQUE (METRIC_NAME, TIMESTAMP)
+      UNIQUE (METRIC_ID, TIMESTAMP),
+      FOREIGN KEY (METRIC_ID) REFERENCES METRIC(ID) ON DELETE CASCADE
     );`;
 
     const muscleSchema = `CREATE TABLE IF NOT EXISTS MUSCLE (
@@ -118,17 +126,51 @@ export class DatabaseService {
         const data = await firstValueFrom(
           this.predefinedDataService.getPredefinedData()
         );
+
+        const muscleNamesList: Array<string> = data['MUSCLE'];
+        const musclePromises = muscleNamesList.map((muscle: string) =>
+          this.db.run('INSERT OR IGNORE INTO MUSCLE (NAME) VALUES (?);', [
+            muscle,
+          ])
+        );
+        await Promise.all(musclePromises);
+        let muscleNameToIdMap = new Map<string, number>();
+        await Promise.all(
+          muscleNamesList.map(async (name) => {
+            const result = await this.getMuscleIdFromName(name);
+            const muscleId: number = (result.values ?? [{ ID: 0 }])[0]['ID']; // always returns
+            muscleNameToIdMap.set(name, muscleId);
+          })
+        );
+
+        console.log('muscleNameToIdMap:');
+        console.log(muscleNameToIdMap);
+
+        data['EXERCISE'].forEach(
+          (exercise: {
+            name: string;
+            unit: string;
+            musclesHit: Array<any>;
+          }) => {
+            let newArr: Array<FractionalSetRatio> = [];
+            exercise.musclesHit.forEach(
+              (setRatio: { muscleName: string; ratio: number }) => {
+                const id = muscleNameToIdMap.get(setRatio.muscleName) ?? -1;
+                newArr.push({
+                  muscleId: id,
+                  ratio: setRatio.ratio,
+                });
+              }
+            );
+            exercise.musclesHit = newArr;
+          }
+        );
+
         const metricPromises = data['METRIC'].map((metric: Metric) =>
           this.db.run(
             'INSERT OR IGNORE INTO METRIC (NAME, UNIT, IS_NUMERIC, HIDDEN) VALUES (?, ?, ?, ?);',
             [metric.name, metric.unit, metric.isNumeric, metric.hidden]
           )
-        );
-
-        const musclePromises = data['MUSCLE'].map((muscle: string) =>
-          this.db.run('INSERT OR IGNORE INTO MUSCLE (NAME) VALUES (?);', [
-            muscle,
-          ])
         );
 
         const exercisePromises = data['EXERCISE'].map((exercise: Exercise) =>
@@ -138,11 +180,7 @@ export class DatabaseService {
           )
         );
 
-        await Promise.all([
-          ...metricPromises,
-          ...musclePromises,
-          ...exercisePromises,
-        ]);
+        await Promise.all([...metricPromises, ...exercisePromises]);
       } catch (err) {
         this.toastService.showToast('Error fetching predefined data!');
       }
@@ -151,9 +189,12 @@ export class DatabaseService {
 
   async showAllEntryData() {
     // for debug only
+    const exData = await this.db.query('SELECT * FROM EXERCISE;');
     const exEntryData = await this.db.query('SELECT * FROM EXERCISE_ENTRY;');
     const metricEntryData = await this.db.query('SELECT * FROM METRIC_ENTRY;');
 
+    console.log('EXERCISE');
+    console.log(exData.values);
     console.log('EXERCISE ENTRIES');
     console.log(exEntryData.values);
     console.log('METRIC ENTRIES');
@@ -218,21 +259,27 @@ export class DatabaseService {
 
   updateExercise() {}
 
-  getExistingExerciseEntry(exName: string, dayTS: number) {
+  getExistingExerciseEntry(exId: number, dayTS: number) {
     return from(
       this.db.query(
-        'SELECT * FROM EXERCISE_ENTRY WHERE EXERCISE_NAME = ? AND TIMESTAMP = ?;',
-        [exName, dayTS]
+        'SELECT * FROM EXERCISE_ENTRY WHERE EXERCISE_ID = ? AND TIMESTAMP = ?;',
+        [exId, dayTS]
       )
     );
+  }
+
+  async getMuscleIdFromName(muscleName: string) {
+    return await this.db.query('SELECT ID FROM MUSCLE WHERE NAME = ?;', [
+      muscleName,
+    ]);
   }
 
   saveExerciseEntry(exData: ExerciseEntryData): Observable<capSQLiteChanges> {
     return from(
       this.db.run(
-        'INSERT OR REPLACE INTO EXERCISE_ENTRY (EXERCISE_NAME, TIMESTAMP, SETS, NOTE) VALUES (?,?,?,?);',
+        'INSERT OR REPLACE INTO EXERCISE_ENTRY (EXERCISE_ID, TIMESTAMP, SETS, NOTE) VALUES (?,?,?,?);',
         [
-          exData.exerciseName,
+          exData.exerciseId,
           exData.timestamp,
           JSON.stringify(exData.sets),
           exData.note,
@@ -241,51 +288,51 @@ export class DatabaseService {
     );
   }
 
-  getLastExerciseEntrySet(exName: string) {
+  getLastExerciseEntrySet(exId: number) {
     // for view in exercise entry
     const todayTS = new Date().setHours(0, 0, 0, 0).valueOf();
     return from(
       this.db.query(
-        'SELECT SETS FROM EXERCISE_ENTRY WHERE EXERCISE_NAME = ? AND TIMESTAMP != ? ORDER BY TIMESTAMP DESC LIMIT 1',
-        [exName, todayTS]
+        'SELECT SETS FROM EXERCISE_ENTRY WHERE EXERCISE_ID = ? AND TIMESTAMP != ? ORDER BY TIMESTAMP DESC LIMIT 1',
+        [exId, todayTS]
       )
     );
   }
-  getRecentExerciseEntrySets(exName: string, recentCount: number = 30) {
+  getRecentExerciseEntrySets(exId: number, recentCount: number = 30) {
     // for view in exercise entry
     const todayTS = new Date().setHours(0, 0, 0, 0).valueOf();
     return from(
       this.db.query(
-        'SELECT SETS FROM EXERCISE_ENTRY WHERE EXERCISE_NAME = ?  AND TIMESTAMP != ? ORDER BY TIMESTAMP DESC LIMIT ?',
-        [exName, todayTS, recentCount]
+        'SELECT SETS FROM EXERCISE_ENTRY WHERE EXERCISE_ID = ?  AND TIMESTAMP != ? ORDER BY TIMESTAMP DESC LIMIT ?',
+        [exId, todayTS, recentCount]
       )
     );
   }
 
-  getAllExerciseEntrySets(exName: string) {
+  getAllExerciseEntrySets(exId: number) {
     // for view in exercise entry
     // ascending since graph should start from first
     return from(
       this.db.query(
-        'SELECT SETS FROM EXERCISE_ENTRY WHERE EXERCISE_NAME = ? ORDER BY TIMESTAMP ASC',
-        [exName]
+        'SELECT SETS FROM EXERCISE_ENTRY WHERE EXERCISE_ID = ? ORDER BY TIMESTAMP ASC',
+        [exId]
       )
     );
   }
-  getLastExerciseEntryNote(exName: string) {
+  getLastExerciseEntryNote(exId: number) {
     const todayTS = new Date().setHours(0, 0, 0, 0).valueOf();
     return from(
       this.db.query(
-        "SELECT NOTE FROM EXERCISE_ENTRY WHERE EXERCISE_NAME = ? AND NOTE != '' AND NOTE IS NOT NULL AND TIMESTAMP != ? ORDER BY TIMESTAMP DESC LIMIT 1",
-        [exName, todayTS]
+        "SELECT NOTE FROM EXERCISE_ENTRY WHERE EXERCISE_ID = ? AND NOTE != '' AND NOTE IS NOT NULL AND TIMESTAMP != ? ORDER BY TIMESTAMP DESC LIMIT 1",
+        [exId, todayTS]
       )
     );
   }
-  getRecentExerciseEntry(exName: string, recentCount: number) {
+  getRecentExerciseEntry(exId: number, recentCount: number) {
     // list is reversed since graph should start from first
     const res = this.db.query(
-      'SELECT * FROM EXERCISE_ENTRY WHERE EXERCISE_NAME = ? ORDER BY TIMESTAMP DESC LIMIT ?',
-      [exName, recentCount]
+      'SELECT * FROM EXERCISE_ENTRY WHERE EXERCISE_ID = ? ORDER BY TIMESTAMP DESC LIMIT ?',
+      [exId, recentCount]
     );
     const reversedRes = res.then((sqlResults) => {
       sqlResults.values?.reverse();
@@ -293,49 +340,120 @@ export class DatabaseService {
     return from(reversedRes);
   }
   getAllExerciseEntryByTimeWindow(
-    exName: string,
+    exId: number,
     startTS: number,
     endTS: number
   ) {
     return from(
       this.db.query(
-        'SELECT * FROM EXERCISE_ENTRY WHERE EXERCISE_NAME = ? AND TIMESTAMP BETWEEN ? AND ? ORDER BY TIMESTAMP ASC',
-        [exName, startTS, endTS]
+        'SELECT * FROM EXERCISE_ENTRY WHERE EXERCISE_ID = ? AND TIMESTAMP BETWEEN ? AND ? ORDER BY TIMESTAMP ASC',
+        [exId, startTS, endTS]
       )
     );
   }
 
-  getTodaysMetric(metricName: string) {
+  getTodaysMetric(metricId: number) {
     const todayTS = new Date().setHours(0, 0, 0, 0).valueOf();
     return from(
       this.db.query(
-        'SELECT * FROM METRIC_ENTRY WHERE METRIC_NAME = ? AND TIMESTAMP = ?',
-        [metricName, todayTS]
+        'SELECT * FROM METRIC_ENTRY WHERE METRIC_ID = ? AND TIMESTAMP = ?',
+        [metricId, todayTS]
       )
     );
   }
-  saveTodaysMetric(metricName: string, data: string, note: string) {
+  saveMetricEntry(metricId: number, data: string, note: string) {
     const todayTS = new Date().setHours(0, 0, 0, 0).valueOf();
     return from(
       this.db.run(
-        'INSERT OR REPLACE INTO METRIC_ENTRY (METRIC_NAME, ENTRY, NOTE, TIMESTAMP) VALUES (?,?,?,?);',
-        [metricName, data, note, todayTS]
+        'INSERT OR REPLACE INTO METRIC_ENTRY (METRIC_ID, ENTRY, NOTE, TIMESTAMP) VALUES (?,?,?,?);',
+        [metricId, data, note, todayTS]
       )
     );
   }
-  deleteTodaysMetric(metricName: string) {
-    const todayTS = new Date().setHours(0, 0, 0, 0).valueOf();
+  deleteMetricEntry(metricId: number, timestamp: number) {
     return from(
-      this.db.query(
-        'DELETE FROM METRIC_ENTRY WHERE METRIC_NAME = ? AND TIMESTAMP = ?',
-        [metricName, todayTS]
+      this.db.run(
+        'DELETE FROM METRIC_ENTRY WHERE METRIC_ID = ? AND TIMESTAMP = ?',
+        [metricId, timestamp]
+      )
+    );
+  }
+  deleteExerciseEntry(exerciseId: number, timestamp: number) {
+    return from(
+      this.db.run(
+        'DELETE FROM EXERCISE_ENTRY WHERE EXERCISE_ID = ? AND TIMESTAMP = ?',
+        [exerciseId, timestamp]
       )
     );
   }
 
-  getMetric(metricName: string) {
+  getMetricByName(metricName: string) {
     return from(
-      this.db.query('SELECT * FROM METRIC WHERE NAME = ?;', [metricName])
+      this.db.query('SELECT * FROM METRIC WHERE LOWER(NAME) = ?;', [
+        metricName.toLowerCase(),
+      ])
     );
+  }
+  getMetricById(metricId: number) {
+    return from(
+      this.db.query('SELECT * FROM METRIC WHERE ID = ?;', [metricId])
+    );
+  }
+  getExerciseByName(exerciseName: string) {
+    return from(
+      this.db.query('SELECT * FROM EXERCISE WHERE LOWER(NAME) = ?;', [
+        exerciseName.toLowerCase(),
+      ])
+    );
+  }
+  getExerciseById(exerciseId: number) {
+    return from(
+      this.db.query('SELECT * FROM EXERCISE WHERE ID = ?;', [exerciseId])
+    );
+  }
+
+  saveMetricMetadata(metric: Metric) {
+    if (metric.id) {
+      return from(
+        this.db.run(
+          'UPDATE METRIC SET NAME = ?, IS_NUMERIC = ?, UNIT = ? WHERE ID = ?;',
+          [metric.name, metric.isNumeric, metric.unit, metric.id]
+        )
+      );
+    } else {
+      console.log('new insert');
+      return from(
+        this.db.run(
+          'INSERT INTO METRIC (NAME, IS_NUMERIC, UNIT) VALUES (?,?,?);',
+          [metric.name, metric.isNumeric, metric.unit]
+        )
+      );
+    }
+  }
+  saveExerciseMetadata(exercise: Exercise) {
+    if (exercise.id) {
+      return from(
+        this.db.run(
+          'UPDATE EXERCISE SET NAME = ?, UNIT = ?, MUSCLES_HIT = ? WHERE ID = ?;',
+          [
+            exercise.name,
+            exercise.unit,
+            JSON.stringify(exercise.musclesHit),
+            exercise.id,
+          ]
+        )
+      );
+    } else {
+      return from(
+        this.db.run(
+          'INSERT INTO EXERCISE (NAME, UNIT, MUSCLES_HIT) VALUES (?, ?, ?);',
+          [exercise.name, exercise.unit, JSON.stringify(exercise.musclesHit)]
+        )
+      );
+    }
+  }
+
+  deleteMetricMetadata(metricId: number) {
+    return from(this.db.run('DELETE FROM METRIC WHERE ID = ?;', [metricId]));
   }
 }

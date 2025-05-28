@@ -12,7 +12,7 @@ export interface ExerciseSetData {
 
 export interface ExerciseEntryData {
   id?: number;
-  exerciseName: string;
+  exerciseId: number;
   timestamp: number;
   sets: Array<ExerciseSetData>;
   note: string;
@@ -22,7 +22,7 @@ export interface ExerciseEntryData {
 // eg 1 set of bicep is 1 set for bicep
 // 1 set of lat pulldown is 0.5 sets for bicep
 export interface FractionalSetRatio {
-  muscleName: string;
+  muscleId: number;
   ratio: number;
 }
 
@@ -43,7 +43,7 @@ export interface Metric {
 
 export interface MetricEntryData {
   id?: number;
-  metricName: string;
+  metricId: number;
   entry: string;
   timestamp: number;
   note: string;

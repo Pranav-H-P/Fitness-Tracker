@@ -39,7 +39,12 @@ export class MetricEntryPageComponent implements OnInit {
   location = inject(Location);
   dataService = inject(DataService);
   toastService = inject(ToastService);
-  metricMetadata!: Metric;
+  metricMetadata: Metric = {
+    id: -1,
+    name: 'error',
+    unit: 'error',
+    isNumeric: false,
+  };
   formBuilder = inject(FormBuilder);
 
   metricName = '';
@@ -53,38 +58,50 @@ export class MetricEntryPageComponent implements OnInit {
 
   ngOnInit(): void {
     this.activatedRoute.params.subscribe((params) => {
-      this.stateService.setCurrentPage(params['name']);
-      this.metricName = params['name'];
+      this.metricMetadata.id = params['id'];
       this.initMetricData();
     });
   }
 
   initMetricData() {
-    this.dataService.getMetricMetadata(this.metricName).subscribe((resp) => {
-      this.metricMetadata = resp;
+    this.dataService
+      .getMetricMetadataById(this.metricMetadata.id ?? 0)
+      .subscribe((resp) => {
+        this.metricMetadata = resp ?? {
+          id: -1,
+          name: 'error',
+          unit: 'error',
+          isNumeric: false,
+        };
+        this.metricName = this.metricMetadata.name;
+        this.stateService.setCurrentPage(this.metricName);
+        if (this.metricMetadata.isNumeric) {
+          this.metricForm = this.formBuilder.group({
+            metricData: this.formBuilder.control('', [
+              Validators.required,
+              Validators.pattern('^(?!$)[0-9]*.?[0-9]*$'),
+            ]),
+            metricNote: this.formBuilder.control(''),
+          });
+        } else {
+          this.metricForm = this.formBuilder.group({
+            metricData: this.formBuilder.control('', [Validators.required]),
+            metricNote: this.formBuilder.control(''),
+          });
+        }
 
-      if (resp.isNumeric) {
-        this.metricForm = this.formBuilder.group({
-          metricData: this.formBuilder.control('', [
-            Validators.required,
-            Validators.pattern('^(?!$)[0-9]*.?[0-9]*$'),
-          ]),
-          metricNote: this.formBuilder.control(''),
-        });
-      } else {
-        this.metricForm = this.formBuilder.group({
-          metricData: this.formBuilder.control('', [Validators.required]),
-          metricNote: this.formBuilder.control(''),
-        });
-      }
-    });
-
-    this.dataService.getTodaysMetricEntry(this.metricName).subscribe((resp) => {
-      this.metricForm.patchValue({
-        metricData: resp.entry,
-        metricNote: resp.note,
+        if (this.metricMetadata.id) {
+          // will always be true
+          this.dataService
+            .getTodaysMetricEntry(this.metricMetadata.id)
+            .subscribe((resp) => {
+              this.metricForm.patchValue({
+                metricData: resp.entry,
+                metricNote: resp.note,
+              });
+            });
+        }
       });
-    });
   }
 
   openDeletePopup() {
@@ -93,15 +110,17 @@ export class MetricEntryPageComponent implements OnInit {
   }
 
   deleteMetricEntry() {
-    this.dataService.deleteTodaysMetricEntry(this.metricName);
+    if (this.metricMetadata.id) {
+      this.dataService.deleteTodaysMetricEntry(this.metricMetadata.id);
+    }
     this.closePopup();
     this.location.back();
   }
 
   saveMetricEntry() {
-    if (this.metricForm.valid) {
+    if (this.metricForm.valid && this.metricMetadata.id) {
       this.dataService.saveMetricEntry(
-        this.metricName,
+        this.metricMetadata.id,
         this.metricForm.value.metricData ?? '0',
         this.metricForm.value.metricNote ?? ''
       );

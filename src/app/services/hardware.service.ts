@@ -26,7 +26,6 @@ export class HardwareService {
           this.location.back();
         }
       }
-      console.log('name: ' + this.stateService.popUpName());
     });
   }
 }

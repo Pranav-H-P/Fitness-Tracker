@@ -17,7 +17,7 @@ export class AppStateService {
 
   scrollMap: Map<string, number> = new Map();
   lastTabMap: Map<string, number> = new Map();
-  currentSetMap: Map<string, { load: string; reps: string }> = new Map();
+  currentSetMap: Map<number, { load: string; reps: string }> = new Map();
 
   currentPage = signal<String>('TestTitle');
   sideBarVisible = signal<Boolean>(false);
@@ -71,11 +71,11 @@ export class AppStateService {
     return 0;
   }
 
-  setCurrentSet(navLink: string, load: string, reps: string) {
-    this.currentSetMap.set(navLink, { load: load, reps: reps });
+  setCurrentSet(exId: number, load: string, reps: string) {
+    this.currentSetMap.set(exId, { load: load, reps: reps });
   }
-  getCurrentSet(navLink: string): { load: string; reps: string } {
-    const data = this.currentSetMap.get(navLink);
+  getCurrentSet(exId: number): { load: string; reps: string } {
+    const data = this.currentSetMap.get(exId);
 
     if (data) {
       return data;

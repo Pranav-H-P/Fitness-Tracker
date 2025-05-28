@@ -3,7 +3,11 @@ import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { ToastService } from '../../../../services/toast.service';
 import { DataService } from '../../../../services/data.service';
 import { AppStateService } from '../../../../services/app-state.service';
-import { ExerciseEntryData, ExerciseSetData } from '../../../../models';
+import {
+  Exercise,
+  ExerciseEntryData,
+  ExerciseSetData,
+} from '../../../../models';
 import { Location } from '@angular/common';
 import { animate, style, transition, trigger } from '@angular/animations';
 import {
@@ -45,6 +49,12 @@ export class ExerciseEntryPageComponent implements OnInit {
   formBuilder = inject(FormBuilder);
 
   exerciseName: string = '';
+  exerciseMetadata: Exercise = {
+    id: -1,
+    name: 'error',
+    unit: 'error',
+    musclesHit: [],
+  };
 
   readonly PopupType = PopupType;
 
@@ -61,9 +71,9 @@ export class ExerciseEntryPageComponent implements OnInit {
 
   currentNote = '';
 
-  tempExerciseMap = signal<Map<string, ExerciseEntryData>>(new Map());
+  tempExerciseMap = signal<Map<number, ExerciseEntryData>>(new Map());
   exerciseData = signal<ExerciseEntryData>({
-    exerciseName: '',
+    exerciseId: 0,
     note: '',
     timestamp: Date.now(),
     sets: [],
@@ -77,44 +87,72 @@ export class ExerciseEntryPageComponent implements OnInit {
 
   ngOnInit(): void {
     this.activatedRoute.params.subscribe((params) => {
-      this.stateService.setCurrentPage(params['name']);
-      this.exerciseName = params['name'];
+      this.exerciseMetadata.id = params['id'];
       this.initExerciseData();
-      const currentSetData = this.stateService.getCurrentSet(this.router.url);
-      this.setForm.setValue(currentSetData);
     });
   }
 
   initExerciseData() {
     this.tempExerciseMap = this.dataService.getTempExerciseDataSignal();
     this.dataService
-      .getExerciseFromTempData(this.exerciseName) // guaranteed to return something
-      .subscribe((res) => {
-        this.exerciseData.set(res);
-        this.currentNote = res.note;
+      .getExerciseMetadataById(this.exerciseMetadata.id ?? 0)
+      .subscribe((resp) => {
+        // will always be not null
+        console.log('metadataresp');
+        console.log(resp);
+        this.exerciseMetadata = resp ?? {
+          id: -1,
+          name: 'error',
+          unit: 'error',
+          musclesHit: [],
+        };
+        this.exerciseName = this.exerciseMetadata.name;
+
+        this.stateService.setCurrentPage(this.exerciseName);
+        if (this.exerciseMetadata.id) {
+          console.log('got id');
+          const currentSetData = this.stateService.getCurrentSet(
+            this.exerciseMetadata.id
+          );
+          this.setForm.setValue(currentSetData);
+          this.dataService
+            .getExerciseFromTempData(this.exerciseMetadata.id)
+            .subscribe((res) => {
+              this.exerciseData.set(res);
+              this.currentNote = res.note;
+            });
+
+          this.dataService
+            .getLastBestSet(this.exerciseMetadata.id)
+            .subscribe((res) => {
+              this.lastBestSet.set(res);
+            });
+          this.dataService
+            .getRecentBestSet(this.exerciseMetadata.id)
+            .subscribe((res) => {
+              this.recentBestSet.set(res);
+            });
+
+          this.dataService
+            .getLastNote(this.exerciseMetadata.id)
+            .subscribe((res) => {
+              this.lastNote.set(res);
+            });
+        } else {
+          console.log('not got id');
+        }
       });
-
-    this.dataService.getLastBestSet(this.exerciseName).subscribe((res) => {
-      this.lastBestSet.set(res);
-    });
-    this.dataService.getRecentBestSet(this.exerciseName).subscribe((res) => {
-      this.recentBestSet.set(res);
-    });
-
-    this.dataService.getLastNote(this.exerciseName).subscribe((res) => {
-      this.lastNote.set(res);
-    });
   }
   swipeLeft() {
     // go to next
     this.stateService.setCurrentSet(
-      this.router.url,
+      this.exerciseMetadata.id ?? 0,
       this.setForm.value.load ?? '',
       this.setForm.value.reps ?? ''
     );
     const size = this.tempExerciseMap().size;
     const tempArr = Array.from(this.tempExerciseMap().keys());
-    const currInd = tempArr.indexOf(this.exerciseName);
+    const currInd = tempArr.indexOf(this.exerciseMetadata.id ?? 0);
 
     if (currInd === size - 1) {
       this.router.navigate(['workout/entry/exercise/' + tempArr[0]], {
@@ -130,13 +168,13 @@ export class ExerciseEntryPageComponent implements OnInit {
   swipeRight() {
     // go to previous
     this.stateService.setCurrentSet(
-      this.router.url,
+      this.exerciseMetadata.id ?? 0,
       this.setForm.value.load ?? '',
       this.setForm.value.reps ?? ''
     );
     const size = this.tempExerciseMap().size;
     const tempArr = Array.from(this.tempExerciseMap().keys());
-    const currInd = tempArr.indexOf(this.exerciseName);
+    const currInd = tempArr.indexOf(this.exerciseMetadata.id ?? 0);
 
     if (currInd > 0) {
       this.router.navigate(['workout/entry/exercise/' + tempArr[currInd - 1]], {
@@ -159,7 +197,7 @@ export class ExerciseEntryPageComponent implements OnInit {
   }
 
   deleteExerciseData() {
-    this.dataService.removeTempExercise(this.exerciseName);
+    this.dataService.removeTempExercise(this.exerciseMetadata.id ?? 0);
     this.stateService.clearPopup();
     this.location.back();
   }
@@ -189,7 +227,7 @@ export class ExerciseEntryPageComponent implements OnInit {
 
   goBack() {
     this.stateService.setCurrentSet(
-      this.router.url,
+      this.exerciseMetadata.id ?? 0,
       this.setForm.value.load ?? '',
       this.setForm.value.reps ?? ''
     );

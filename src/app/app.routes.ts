@@ -35,11 +35,11 @@ export const routes: Routes = [
     component: EntryItemsPageComponent,
   },
   {
-    path: 'workout/entry/exercise/:name',
+    path: 'workout/entry/exercise/:id',
     component: ExerciseEntryPageComponent,
   },
   {
-    path: 'workout/entry/metric/:name',
+    path: 'workout/entry/metric/:id',
     component: MetricEntryPageComponent,
   },
   {
@@ -47,11 +47,11 @@ export const routes: Routes = [
     component: CreationListPageComponent,
   },
   {
-    path: 'workout/create/exercise/:name',
+    path: 'workout/create/exercise/:id',
     component: ExerciseCreationPageComponent,
   },
   {
-    path: 'workout/create/metric/:name',
+    path: 'workout/create/metric/:id',
     component: MetricCreationPageComponent,
   },
   {
@@ -59,7 +59,7 @@ export const routes: Routes = [
     component: LogPageComponent,
   },
   {
-    path: 'workout/logs/:name',
+    path: 'workout/logs/:date',
     component: CalendarViewPageComponent,
   },
   {

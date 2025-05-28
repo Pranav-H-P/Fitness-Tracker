@@ -69,7 +69,7 @@ export class EntryItemsPageComponent implements AfterViewInit {
   displayList = this.dataService.getExerciseListSignal();
   muscleList = this.dataService.getMuscleListSignal();
 
-  activeExercises: Signal<Map<string, ExerciseEntryData>> =
+  activeExercises: Signal<Map<number, ExerciseEntryData>> =
     this.dataService.getTempExerciseDataSignal();
 
   searchTerm = signal<string>('');
@@ -145,15 +145,25 @@ export class EntryItemsPageComponent implements AfterViewInit {
     this.saveScrollPos();
     if (this.currentTab() === 0) {
       if (name === null) {
-        name = Array.from(this.activeExercises().keys()).pop() ?? '';
+        let lastId: number =
+          Array.from(this.activeExercises().keys()).pop() ?? 0;
+
+        this.router.navigateByUrl(
+          this.tabData[this.currentTab()].popupLink + lastId
+        );
+      } else {
+        this.dataService.getExerciseMetadataByName(name).subscribe((resp) => {
+          this.router.navigateByUrl(
+            this.tabData[this.currentTab()].popupLink + resp?.id
+          );
+        });
       }
-      this.router.navigateByUrl(
-        this.tabData[this.currentTab()].popupLink + name
-      );
     } else {
-      this.router.navigateByUrl(
-        this.tabData[this.currentTab()].popupLink + name
-      );
+      this.dataService.getMetricMetadataByName(name ?? '').subscribe((resp) => {
+        this.router.navigateByUrl(
+          this.tabData[this.currentTab()].popupLink + resp?.id
+        );
+      });
     }
   }
 
@@ -172,11 +182,6 @@ export class EntryItemsPageComponent implements AfterViewInit {
     } else {
       this.stateService.setPopup(PopupType.MUSCLE_FILTER);
     }
-    console.log(`condition=>
-      ${
-        this.currentTab() === 0 &&
-        this.stateService.popUpName() === PopupType.MUSCLE_FILTER
-      }`);
   }
 
   updateExerciseList() {

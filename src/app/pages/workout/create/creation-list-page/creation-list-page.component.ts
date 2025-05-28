@@ -18,7 +18,7 @@ import { TabData } from '../../../../models';
 @Component({
   selector: 'app-creation-list-page',
   standalone: true,
-  imports: [PageTabComponent, FormsModule, NgClass],
+  imports: [PageTabComponent, FormsModule],
   templateUrl: './creation-list-page.component.html',
   styleUrl: './creation-list-page.component.scss',
   animations: [
@@ -142,6 +142,20 @@ export class CreationListPageComponent implements AfterViewInit {
   openPopup(name: string = '') {
     this.saveScrollPos();
 
-    this.router.navigateByUrl(this.tabData[this.currentTab()].popupLink + name);
+    if (this.currentTab() == 0) {
+      this.dataService
+        .getExerciseMetadataByName(name ?? '')
+        .subscribe((resp) => {
+          this.router.navigateByUrl(
+            this.tabData[this.currentTab()].popupLink + resp?.id
+          );
+        });
+    } else {
+      this.dataService.getMetricMetadataByName(name ?? '').subscribe((resp) => {
+        this.router.navigateByUrl(
+          this.tabData[this.currentTab()].popupLink + resp?.id
+        );
+      });
+    }
   }
 }

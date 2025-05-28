@@ -5,8 +5,8 @@
         <button class="p-3 px-4 bg-surface-charcoal-700 rounded-lg text-lg" (click)="goBack()">Back</button>
 
         <div class="flex justify-between m-0">
-            @for (exercise of tempExerciseMap().keys(); track i; let i = $index) {
-            @if(tempExerciseMap().get(exercise)?.exerciseName === exerciseName){
+            @for (exerciseId of tempExerciseMap().keys(); track i; let i = $index) {
+            @if(tempExerciseMap().get(exerciseId)?.exerciseId === exerciseMetadata.id){
 
             <img src="assets/images/radio_checked.svg" alt="o" class="h-2 w-2">
             }@else {
@@ -133,7 +133,7 @@
             (click)="$event.stopPropagation()">
 
             <p class="text-3xl">Are you sure?</p>
-            <p class="mx-auto">Unsaved data will be lost!</p>
+            <p class="mx-auto">Unsaved set data will be lost!</p>
 
             <div class="flex justify-between">
                 <button class="p-3 px-4 bg-surface-charcoal-700 rounded-lg text-lg" (click)="closePopup()">Back</button>
