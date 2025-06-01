@@ -202,4 +202,20 @@ export class EntryItemsPageComponent implements AfterViewInit {
     this.updateExerciseList();
     this.toggleFilter();
   }
+
+  swipeRight() {
+    if (this.currentTab() == 0) {
+      this.stateService.showSideBar();
+    } else {
+      this.changeTab(0);
+    }
+  }
+
+  swipeLeft() {
+    if (this.currentTab() == 0) {
+      this.changeTab(1);
+    } else {
+      this.router.navigateByUrl('workout/create');
+    }
+  }
 }

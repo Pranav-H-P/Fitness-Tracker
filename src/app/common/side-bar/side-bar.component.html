@@ -1,4 +1,5 @@
-<section class="flex flex-col absolute top-0 left-0 h-[100vh] bg-black/70 w-[100vw] transition-all z-[9999]" [ngClass]="{
+<section class="flex flex-col absolute top-0 left-0 h-[100vh] bg-black/70 w-[100vw] transition-all z-[9999]"
+    (swipeleft)="hideSideBar($event)" [ngClass]="{
     'opacity-100 pointer-events-auto': visible(),
     'opacity-0 pointer-events-none': !visible()
   }" (click)="hideSideBar($event)">

@@ -49,7 +49,7 @@ export class DatabaseService {
 
     await this.db.open();
     await this.db.execute(`PRAGMA foreign_keys = ON;`);
-    await this.clearDb(); // TODO remove before release
+    //await this.clearDb(); // TODO remove before release
     await this.createTables();
 
     await this.populateInitialDb();
@@ -142,9 +142,6 @@ export class DatabaseService {
             muscleNameToIdMap.set(name, muscleId);
           })
         );
-
-        console.log('muscleNameToIdMap:');
-        console.log(muscleNameToIdMap);
 
         data['EXERCISE'].forEach(
           (exercise: {

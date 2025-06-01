@@ -2,5 +2,5 @@
     <div>
         <img [src]="imgSrc" alt="0" width="30" height="30">
     </div>
-    <p class="text-sm">{{subText}}</p>
+    <p class="text-sm" [ngClass]="{'text-secondary-brown-400': router.url === ('/' + navLink)}">{{subText}}</p>
 </div>

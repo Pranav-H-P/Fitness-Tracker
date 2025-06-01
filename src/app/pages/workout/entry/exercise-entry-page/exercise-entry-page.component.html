@@ -77,9 +77,12 @@
     <div class="p-3 rounded-md bg-surface-charcoal-900 shadow-custom-dark">
 
         <p class="text-3xl">Last Note</p>
-        <div class="flex flex-col h-9">
+        <div class="flex flex-col min-h-9 gap-2">
 
             <p class="text-wrap">{{lastNote()}}</p>
+            @if (exerciseData().sets.length > 0) {
+            <p class="font-bold"> Time since last set: {{timeSinceLastSet}} seconds</p>
+            }
         </div>
 
     </div>
@@ -133,7 +136,7 @@
             (click)="$event.stopPropagation()">
 
             <p class="text-3xl">Are you sure?</p>
-            <p class="mx-auto">Unsaved set data will be lost!</p>
+            <p class="mx-auto font-bold">Unsaved set data will be lost!</p>
 
             <div class="flex justify-between">
                 <button class="p-3 px-4 bg-surface-charcoal-700 rounded-lg text-lg" (click)="closePopup()">Back</button>

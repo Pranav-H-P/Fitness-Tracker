@@ -1,4 +1,4 @@
-import { Component, inject, OnInit, signal } from '@angular/core';
+import { Component, inject, OnDestroy, OnInit, signal } from '@angular/core';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { ToastService } from '../../../../services/toast.service';
 import { DataService } from '../../../../services/data.service';
@@ -12,13 +12,12 @@ import { Location } from '@angular/common';
 import { animate, style, transition, trigger } from '@angular/animations';
 import {
   FormBuilder,
-  FormControl,
-  FormGroup,
   FormsModule,
   ReactiveFormsModule,
   Validators,
 } from '@angular/forms';
 import { PopupType } from '../../../../eums';
+import { interval, Subscription } from 'rxjs';
 
 @Component({
   selector: 'app-exercise-entry-page',
@@ -39,7 +38,7 @@ import { PopupType } from '../../../../eums';
     ]),
   ],
 })
-export class ExerciseEntryPageComponent implements OnInit {
+export class ExerciseEntryPageComponent implements OnInit, OnDestroy {
   router = inject(Router);
   activatedRoute = inject(ActivatedRoute);
   toastService = inject(ToastService);
@@ -55,6 +54,9 @@ export class ExerciseEntryPageComponent implements OnInit {
     unit: 'error',
     musclesHit: [],
   };
+
+  timeSinceLastSet: number = -1;
+  timerSubscription!: Subscription;
 
   readonly PopupType = PopupType;
 
@@ -92,6 +94,9 @@ export class ExerciseEntryPageComponent implements OnInit {
     });
   }
 
+  ngOnDestroy(): void {
+    this.stopTimer();
+  }
   initExerciseData() {
     this.tempExerciseMap = this.dataService.getTempExerciseDataSignal();
     this.dataService
@@ -204,6 +209,9 @@ export class ExerciseEntryPageComponent implements OnInit {
 
   deleteSetData(ind: number) {
     this.exerciseData().sets.splice(ind, 1);
+    if (this.exerciseData().sets.length == 0) {
+      this.stopTimer();
+    }
   }
 
   openSavePopup() {
@@ -242,6 +250,8 @@ export class ExerciseEntryPageComponent implements OnInit {
         reps: Number.parseInt(this.setForm.value.reps ?? ''),
         timestamp: Date.now(),
       });
+
+      this.startTimer();
     } else {
       this.toastService.showToast('Invalid Input!');
     }
@@ -257,5 +267,23 @@ export class ExerciseEntryPageComponent implements OnInit {
     return `${data.load} ${this.unit()} x ${data.reps} at ${this.getTime(
       data.timestamp
     )}`;
+  }
+
+  startTimer() {
+    this.timeSinceLastSet = 0;
+
+    if (this.timerSubscription) {
+      this.timerSubscription.unsubscribe();
+    }
+    this.timerSubscription = interval(1000).subscribe(() => {
+      this.timeSinceLastSet = Math.floor(
+        (Date.now() - (this.exerciseData().sets.at(-1)?.timestamp ?? 0)) / 1000
+      );
+    });
+  }
+  stopTimer() {
+    if (this.timerSubscription) {
+      this.timerSubscription.unsubscribe();
+    }
   }
 }

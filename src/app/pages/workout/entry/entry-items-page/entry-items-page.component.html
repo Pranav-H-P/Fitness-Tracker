@@ -1,4 +1,5 @@
-<section class="flex flex-col h-[100%] bg-slate-900 text-surface-charcoal-100/90">
+<section class="flex flex-col h-[100%] bg-slate-900 text-surface-charcoal-100/90" (swipeleft)="swipeLeft()"
+  (swiperight)="swipeRight()">
   <app-page-tab [tabData]="tabData" [currentTab]="currentTab()" (changeTab)="changeTab($event)"></app-page-tab>
 
   <div class="flex gap-5 p-2">
@@ -44,7 +45,7 @@
 
   @if (currentTab()===0) { <!--just for the transition animation to happen-->
   <div @listFade #scrollContainer
-    class="grid grid-cols-2 gap-4 p-3 mt-4 overflow-y-auto overflow-x-visible max-h-[64vh]">
+    class="grid grid-cols-2 gap-4 p-3 mt-4 overflow-y-auto overflow-x-visible max-h-[64vh] touch-pan-y">
     @for (name of displayList(); track i; let i = $index) {
     <div @fade (click)="openPopup(name)"
       class="flex p-5 shadow-custom-dark rounded-lg text-wrap whitespace-normal break-words h-auto bg-secondary-brown-800 justify-center items-center">
