@@ -25,15 +25,15 @@ export class DataService {
 
   exerciseList = signal<Array<string>>([]);
   metricList = signal<Array<string>>([]);
-  muscleList = signal<Array<string>>([]);
+  muscleList = signal<Array<{ name: string; id: number; disabled?: boolean }>>(
+    []
+  );
 
   constructor() {}
 
-  updateExerciseList(
-    searchTerm: string = '',
-    muscleName: string | null = null
-  ) {
-    this.databaseService.getExerciseNameList(searchTerm, muscleName).subscribe({
+  updateExerciseList(searchTerm: string = '', muscleId: number | null = null) {
+    console.log('muscleId', muscleId);
+    this.databaseService.getExerciseNameList(searchTerm, muscleId).subscribe({
       next: (res) => {
         const resArr = res.values;
         let newList: Array<string> = [];
@@ -42,7 +42,7 @@ export class DataService {
             newList.push(obj.NAME);
           });
         }
-
+        console.log(newList);
         this.exerciseList.set(newList);
       },
       error: (err) => {
@@ -75,14 +75,14 @@ export class DataService {
     this.databaseService.getMuscleNameList().subscribe({
       next: (res) => {
         const resArr = res.values;
-        let newList: Array<string> = [];
+        let newList: Array<{ name: string; id: number; disabled?: boolean }> =
+          [];
 
         if (resArr && resArr?.length > 0) {
           resArr.forEach((obj) => {
-            newList.push(obj.NAME);
+            newList.push({ name: obj.NAME, id: obj.ID, disabled: true });
           });
         }
-
         this.muscleList.set(newList);
       },
       error: (err) => {
@@ -100,7 +100,9 @@ export class DataService {
     return this.metricList;
   }
 
-  getMuscleListSignal(): WritableSignal<Array<string>> {
+  getMuscleListSignal(): WritableSignal<
+    Array<{ name: string; id: number; disabled?: boolean }>
+  > {
     return this.muscleList;
   }
 
@@ -397,5 +399,12 @@ export class DataService {
 
   deleteMetricMetadata(metricId: number) {
     this.databaseService.deleteMetricMetadata(metricId);
+  }
+  saveExerciseMetadata(exercise: Exercise) {
+    this.databaseService.saveExerciseMetadata(exercise);
+  }
+
+  deleteExerciseMetadata(exerciseId: number) {
+    this.databaseService.deleteExerciseMetadata(exerciseId);
   }
 }

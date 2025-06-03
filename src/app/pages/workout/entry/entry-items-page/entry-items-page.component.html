@@ -29,11 +29,11 @@
     <div class="bg-surface-charcoal-800 rounded-lg h-[65vh] w-[90vw] p-5" (click)="$event.stopPropagation()">
 
       <div class="grid grid-cols-2 gap-5 overflow-y-auto h-full w-full">
-        @for (name of muscleList(); track i; let i = $index) {
-        <div (click)="setMuscleFilter(name)"
+        @for (muscleObj of muscleList(); track i; let i = $index) {
+        <div (click)="setMuscleFilter(muscleObj.id)"
           class="p-2 py-5 rounded-lg text-wrap whitespace-normal h-auto text-center align-middle shadow-custom-light"
-          [ngClass]="{'bg-secondary-brown-500': muscleName() !== name, 'bg-secondary-brown-900': muscleName() === name}">
-          <p>{{ name }}</p>
+          [ngClass]="{'bg-secondary-brown-500': muscleId() !== muscleObj.id, 'bg-secondary-brown-900': muscleId() === muscleObj.id}">
+          <p>{{ muscleObj.name }}</p>
         </div>
         }
       </div>
@@ -67,7 +67,7 @@
 
 
 
-  @if(activeExercises().size > 0){
+  @if(activeExercises().size > 0 && currentTab() ==0){
   <div class="rounded-xl fixed bottom-[11%] p-3 right-[8%] bg-surface-charcoal-700 shadow-custom-light"
     (click)="openPopup(null)">
     <img src="assets/images/edit.svg" alt="+" width="40" height="40" />

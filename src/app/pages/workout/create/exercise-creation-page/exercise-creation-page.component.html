@@ -1,1 +1,92 @@
-<p>exercise-creation-page works!</p>
+<section class="flex flex-col min-h-[100%] bg-slate-900 text-surface-charcoal-100/90 p-2 gap-3 justify-between scroll">
+
+    <div class="flex justify-between items-center">
+        <button class="p-3 px-4 bg-surface-charcoal-700 rounded-lg text-lg" (click)="this.location.back()">Back</button>
+
+
+        <button class="p-3 px-4 bg-primary-red-500 rounded-lg text-lg" (click)="openDeletePopup()">Delete</button>
+
+    </div>
+
+
+    <form [formGroup]="exerciseForm"
+        class="flex flex-col text-lg m-2 p-5 gap-5 rounded-md bg-surface-charcoal-900 shadow-custom-dark">
+        <div class="flex flex-col gap-2">
+            <p class="text-3xl">Exercise Name</p>
+
+
+            <input class="text-xl w-full rounded-md bg-surface-charcoal-950 p-2 focus:outline-none" id="exerciseName"
+                formControlName="name" placeholder="Name">
+
+
+        </div>
+        <div class="flex flex-col gap-2">
+            <p class="text-3xl">Unit</p>
+
+
+            <input class="text-xl w-full rounded-md bg-surface-charcoal-950 p-2 focus:outline-none" id="exerciseId"
+                formControlName="unit" placeholder="unit">
+
+
+        </div>
+        <div class="flex justify-between items-center">
+            <p class="text-3xl">Muscles Trained </p>
+            <div (click)="addMuscleHitField()">
+                <img src="assets/images/add_white.svg" alt="Add" width="30" height="30">
+            </div>
+        </div>
+        <div #scrollContainer
+            class="flex flex-col p-3 gap-3 rounded-md bg-surface-charcoal-950/80 shadow-custom-dark overflow-y-auto touch-pan-y max-h-[25vh]">
+
+
+            @for (fracCtrlGrp of getMusclesHitFormArray().controls; track i; let i = $index) {
+            <div [formGroup]="fracCtrlGrp" class="flex gap-3 items-center">
+                <select (select)="refreshSelectionArray()"
+                    class="text-surface-charcoal-100/90 text-xl w-[60%] rounded-md bg-surface-charcoal-950 p-2 focus:outline-none"
+                    formControlName="muscleId" [id]="'muscle'+i">
+                    <option value="-1" disabled hidden>Muscle Name</option>
+                    @for (muscleObj of muscleSelectionList(); track j; let j = $index) {
+                    @if(!(getMuscleHitSelectedIdList().includes(muscleObj.id)) || muscleObj.id ==
+                    fracCtrlGrp.value['muscleId']){
+                    <option [value]="muscleObj.id">{{muscleObj.name}}</option>
+                    }
+
+                    }
+                </select>
+                <input class="text-xl w-[20%] rounded-md bg-surface-charcoal-950 p-2 focus:outline-none"
+                    [id]="'muscleRatio'+i" formControlName="ratio" placeholder="ratio">
+                <div (click)="deleteFractionalRatioControl(i)">
+                    <img src="assets/images/delete_grey.svg" alt="Delete" width="30" height="30">
+                </div>
+            </div>
+
+            }
+        </div>
+
+    </form>
+
+    <button class="text-center p-2 w-full bg-green-700 rounded-lg text-lg"
+        (click)="saveExerciseMetadata()">Save</button>
+
+
+    @if (stateService.popUpName() === PopupType.DELETE_EXERCISE_METADATA) {
+    <div @fade class="fixed left-0 top-0 h-[100vh] w-[100vw] flex justify-center items-center z-40 bg-black/50"
+        (click)="closePopup()">
+        <div class="bg-surface-charcoal-900 rounded-lg min-h-[30vh] w-[90vw] p-5 flex flex-col justify-between gap-5"
+            (click)="$event.stopPropagation()">
+
+            <p class="text-3xl">Are you sure?</p>
+            <p class="mx-auto font-bold">All saved data will be lost!</p>
+
+            <div class="flex justify-between">
+                <button class="p-3 px-4 bg-surface-charcoal-700 rounded-lg text-lg" (click)="closePopup()">Back</button>
+                <button class="p-3 px-4 bg-primary-red-500 rounded-lg text-lg"
+                    (click)="deleteExercise()">Delete</button>
+            </div>
+
+
+        </div>
+    </div>
+    }
+
+</section>

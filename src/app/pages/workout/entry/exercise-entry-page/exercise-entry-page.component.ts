@@ -84,7 +84,7 @@ export class ExerciseEntryPageComponent implements OnInit, OnDestroy {
   recentBestSet = signal<ExerciseSetData | null>(null);
 
   lastNote = signal<string>('None');
-  unit = signal<string>('Kg');
+
   bestIndex = signal<number>(0); // to decide between last session and recent best
 
   ngOnInit(): void {
@@ -123,6 +123,9 @@ export class ExerciseEntryPageComponent implements OnInit, OnDestroy {
           this.dataService
             .getExerciseFromTempData(this.exerciseMetadata.id)
             .subscribe((res) => {
+              if (res.sets.length > 0) {
+                this.startTimer();
+              }
               this.exerciseData.set(res);
               this.currentNote = res.note;
             });
@@ -264,9 +267,9 @@ export class ExerciseEntryPageComponent implements OnInit, OnDestroy {
   }
 
   formatSetData(data: ExerciseSetData) {
-    return `${data.load} ${this.unit()} x ${data.reps} at ${this.getTime(
-      data.timestamp
-    )}`;
+    return `${data.load} ${this.exerciseMetadata.unit} x ${
+      data.reps
+    } at ${this.getTime(data.timestamp)}`;
   }
 
   startTimer() {

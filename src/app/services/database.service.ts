@@ -199,16 +199,16 @@ export class DatabaseService {
   }
   getExerciseNameList(
     searchTerm?: string,
-    muscleName?: string | null
+    muscleId?: number | null
   ): Observable<DBSQLiteValues> {
     if (!searchTerm) {
       searchTerm = '';
     }
-    if (muscleName) {
+    if (muscleId) {
       return from(
         this.db.query(
-          `SELECT EXERCISE.NAME FROM EXERCISE, JSON_EACH(EXERCISE.MUSCLES_HIT) AS JS WHERE LOWER(EXERCISE.NAME) LIKE '%' || LOWER(?) || '%' AND LOWER(JSON_EXTRACT(JS.value,'$.muscleName')) = LOWER(?) ORDER BY LOWER(EXERCISE.NAME) ASC;`,
-          [searchTerm, muscleName]
+          `SELECT EXERCISE.NAME FROM EXERCISE, JSON_EACH(EXERCISE.MUSCLES_HIT) AS JS WHERE LOWER(EXERCISE.NAME) LIKE '%' || LOWER(?) || '%' AND JSON_EXTRACT(JS.value,'$.muscleId') = ? ORDER BY LOWER(EXERCISE.NAME) ASC;`,
+          [searchTerm, muscleId]
         )
       );
     } else {
@@ -248,7 +248,7 @@ export class DatabaseService {
 
   getMuscleNameList(): Observable<DBSQLiteValues> {
     return from(
-      this.db.query('SELECT NAME FROM MUSCLE ORDER BY LOWER(NAME) ASC;')
+      this.db.query('SELECT * FROM MUSCLE ORDER BY LOWER(NAME) ASC;')
     );
   }
 
@@ -452,5 +452,10 @@ export class DatabaseService {
 
   deleteMetricMetadata(metricId: number) {
     return from(this.db.run('DELETE FROM METRIC WHERE ID = ?;', [metricId]));
+  }
+  deleteExerciseMetadata(exerciseId: number) {
+    return from(
+      this.db.run('DELETE FROM EXERCISE WHERE ID = ?;', [exerciseId])
+    );
   }
 }

@@ -73,7 +73,7 @@ export class EntryItemsPageComponent implements AfterViewInit {
     this.dataService.getTempExerciseDataSignal();
 
   searchTerm = signal<string>('');
-  muscleName = signal<string | null>(null);
+  muscleId = signal<number | null>(null);
 
   tabData: Array<TabData> = [
     {
@@ -95,7 +95,7 @@ export class EntryItemsPageComponent implements AfterViewInit {
   constructor() {
     this.stateService.setCurrentPage('Entry');
     this.searchTerm.set('');
-    this.muscleName.set(null);
+    this.muscleId.set(null);
     this.pageUrl = this.router.url;
   }
 
@@ -129,7 +129,7 @@ export class EntryItemsPageComponent implements AfterViewInit {
   changeTab(ind: number) {
     this.currentTab.set(ind);
     this.searchTerm.set('');
-    this.muscleName.set(null);
+    this.muscleId.set(null);
     this.saveTabIndex();
 
     if (ind === 0) {
@@ -185,18 +185,18 @@ export class EntryItemsPageComponent implements AfterViewInit {
   }
 
   updateExerciseList() {
-    this.dataService.updateExerciseList(this.searchTerm(), this.muscleName());
+    this.dataService.updateExerciseList(this.searchTerm(), this.muscleId());
   }
 
   updateMetricList() {
     this.dataService.updateMetricList(this.searchTerm());
   }
 
-  setMuscleFilter(name: string) {
-    if (this.muscleName() === name) {
-      this.muscleName.set(null);
+  setMuscleFilter(id: number) {
+    if (this.muscleId() === id) {
+      this.muscleId.set(null);
     } else {
-      this.muscleName.set(name);
+      this.muscleId.set(id);
     }
 
     this.updateExerciseList();
