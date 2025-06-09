@@ -56,11 +56,11 @@ export const routes: Routes = [
   },
   {
     path: 'workout/logs',
-    component: LogPageComponent,
+    component: CalendarViewPageComponent,
   },
   {
     path: 'workout/logs/:date',
-    component: CalendarViewPageComponent,
+    component: LogPageComponent,
   },
   {
     path: 'diet/tracking',

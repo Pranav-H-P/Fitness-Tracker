@@ -1,1 +1,61 @@
-<p>calendar-view-page works!</p>
+<section class="flex flex-col min-h-[100%] bg-slate-900 text-surface-charcoal-100/90 p-2 gap-3 scroll">
+
+
+    <div class="flex flex-col text-lg mt-10 m-2 p-5 gap-5 rounded-md" @fade>
+
+        <div class="flex flex-col gap-5 items-center">
+            <div class="flex w-full justify-between items-center bg-surface-charcoal-950/50 rounded-md p-2">
+                <div class="bg-surface-charcoal-900/80 p-2 rounded-md" (click)="decYear()">
+                    <img src="assets/images/chevron_left.svg" alt="L" width="30" height="30">
+                </div>
+                <p @fade class="text-3xl">{{currentYear}}</p>
+                <div class="bg-surface-charcoal-900/80 p-2 rounded-md" (click)="incYear()">
+                    <img src="assets/images/chevron_right.svg" alt="R" width="30" height="30">
+                </div>
+            </div>
+            <div class="flex w-full justify-between items-center bg-surface-charcoal-950/50 rounded-md p-2">
+                <div class="bg-surface-charcoal-900/80 p-2 rounded-md" (click)="decMonth()">
+                    <img src="assets/images/chevron_left.svg" alt="L" width="30" height="30">
+                </div>
+                <p @fade class="text-3xl">{{MONTHS[currentMonthIndex]}}</p>
+                <div class="bg-surface-charcoal-900/80 p-2 rounded-md" (click)="incMonth()">
+                    <img src="assets/images/chevron_right.svg" alt="R" width="30" height="30">
+                </div>
+            </div>
+
+
+
+
+
+        </div>
+
+
+
+    </div>
+    <div @fade (swipeleft)="swipeLeftCalendar()" (swiperight)="swipeRightCalendar()"
+        class="grid grid-cols-7 grid-rows-6 text-xl p-3 gap-3 rounded-md bg-surface-charcoal-950 shadow-custom-dark overflow-y-auto touch-pan-y max-h-[50vh]">
+
+        @for(dayName of DAYNAMES; track $index){
+        <div @listFade class="p-2 bg-bg-surface-charcoal-950/80 rounded-md text-surface-charcoal-100/60">
+            {{dayName}}
+        </div>
+        }
+
+        @for (dayObj of dayObjs(); track i; let i = $index) {
+        <div @listFade class="relative p-2 bg-bg-surface-charcoal-950/80 rounded-md text-surface-charcoal-100/60"
+            [routerLink]="'workout/logs/'+getDateTs(dayObj.date)">
+            {{dayObj.date !== -1 ? dayObj.date : ' ' }}
+            <div class="absolute right-0 bottom-0 text-xs flex flex-row-reverse text-green-400/90">
+                @if (dayObj.exerciseData) {
+                <p>E</p>
+                }
+                @if ((dayObj.metricData)) {
+                <p>M</p>
+                }
+            </div>
+        </div>
+        }
+
+    </div>
+
+</section>

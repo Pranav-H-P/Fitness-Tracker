@@ -53,3 +53,17 @@ export interface TabData {
   name: string;
   popupLink: string;
 }
+
+export interface ExerciseLogEntry {
+  name: string;
+  note?: string;
+  sets: Array<ExerciseSetData>;
+  unit: string;
+}
+
+export interface MetricLogEntry {
+  name: string;
+  note?: string;
+  entry: string;
+  unit: string;
+}

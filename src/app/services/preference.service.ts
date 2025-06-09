@@ -6,9 +6,9 @@ import { Injectable } from '@angular/core';
 export class PreferenceService {
   constructor() {}
 
-  // TODO Add actual preferences api later
+  recentEntryCount = 30;
 
   getRecentEntryCount() {
-    return 30;
+    return this.recentEntryCount;
   }
 }

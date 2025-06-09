@@ -458,4 +458,27 @@ export class DatabaseService {
       this.db.run('DELETE FROM EXERCISE WHERE ID = ?;', [exerciseId])
     );
   }
+
+  getAllExerciseLogsInDay(ts: number) {
+    return from(
+      this.db.query(
+        `SELECT * FROM EXERCISE_ENTRY AS ENT
+      INNER JOIN EXERCISE as EX 
+      ON ENT.EXERCISE_ID = EX.ID 
+      WHERE ENT.TIMESTAMP = ?;`,
+        [ts]
+      )
+    );
+  }
+  getAllMetricLogsInDay(ts: number) {
+    return from(
+      this.db.query(
+        `SELECT * FROM METRIC_ENTRY AS ENT
+      INNER JOIN METRIC as MET 
+      ON ENT.METRIC_ID = MET.ID 
+      WHERE ENT.TIMESTAMP = ?;`,
+        [ts]
+      )
+    );
+  }
 }

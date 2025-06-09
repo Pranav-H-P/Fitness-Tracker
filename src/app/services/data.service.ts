@@ -2,9 +2,11 @@ import { inject, Injectable, signal, WritableSignal } from '@angular/core';
 import {
   Exercise,
   ExerciseEntryData,
+  ExerciseLogEntry,
   ExerciseSetData,
   Metric,
   MetricEntryData,
+  MetricLogEntry,
 } from '../models';
 import { DatabaseService } from './database.service';
 import { ToastService } from './toast.service';
@@ -406,5 +408,46 @@ export class DataService {
 
   deleteExerciseMetadata(exerciseId: number) {
     this.databaseService.deleteExerciseMetadata(exerciseId);
+  }
+
+  getAllExerciseLogsInDay(date: number): Observable<ExerciseLogEntry | null> {
+    return this.databaseService.getAllExerciseLogsInDay(date).pipe(
+      map((data) => {
+        const returnArr = data.values;
+        if (returnArr && returnArr.length > 0) {
+          const exerciseLog = returnArr[0];
+          return {
+            name: exerciseLog['NAME'],
+            note: exerciseLog['NOTE'],
+            unit: exerciseLog['UNIT'],
+            sets: JSON.parse(exerciseLog['SETS']),
+          };
+        }
+        return null;
+      }),
+      catchError((err) => {
+        return of(null);
+      })
+    );
+  }
+  getAllMetricLogsInDay(date: number): Observable<MetricLogEntry | null> {
+    return this.databaseService.getAllMetricLogsInDay(date).pipe(
+      map((data) => {
+        const returnArr = data.values;
+        if (returnArr && returnArr.length > 0) {
+          const metricLog = returnArr[0];
+          return {
+            name: metricLog['NAME'],
+            note: metricLog['NOTE'],
+            unit: metricLog['UNIT'],
+            entry: metricLog['ENTRY'],
+          };
+        }
+        return null;
+      }),
+      catchError((err) => {
+        return of(null);
+      })
+    );
   }
 }
