@@ -81,7 +81,7 @@
 
             <p class="text-wrap">{{lastNote()}}</p>
             @if (exerciseData().sets.length > 0 && timeSinceLastSet >=0) {
-            <p class="font-bold"> Time since last set: {{timeSinceLastSet}} seconds</p>
+            <p class="font-bold"> Time since last set: {{formatSeconds(timeSinceLastSet)}}</p>
             }
         </div>
 

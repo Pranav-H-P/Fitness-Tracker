@@ -92,7 +92,7 @@ export class CalendarViewPageComponent implements OnInit {
   }
 
   ngOnInit(): void {
-    this.stateService.setCurrentPage('Entry');
+    this.stateService.setCurrentPage('Logs');
   }
   isLeapYear(year: number): boolean {
     return (year % 4 == 0 && year % 100 != 0) || year % 400 == 0;
@@ -144,7 +144,7 @@ export class CalendarViewPageComponent implements OnInit {
           concatMap((resp) => {
             this.dayObjs().push({
               date: i + 1,
-              exerciseData: resp == null ? false : true,
+              exerciseData: resp.length == 0 ? false : true,
             });
             return metLogObs;
           })
@@ -152,7 +152,7 @@ export class CalendarViewPageComponent implements OnInit {
         .subscribe({
           next: (resp) => {
             this.dayObjs()[i + firstDayInd].metricData =
-              resp == null ? false : true;
+              resp.length == 0 ? false : true;
           },
           error: (err) => {
             console.log(err);
@@ -186,16 +186,14 @@ export class CalendarViewPageComponent implements OnInit {
   }
 
   swipeRightCalendar() {
-    console.log('inner');
     this.decMonth();
   }
   swipeLeftCalendar() {
-    console.log('inner');
     this.incMonth();
   }
 
   swipeRight() {
-    console.log('outer');
+    // not using rn due to hammer event handling issues
     this.router.navigateByUrl('workout/create');
   }
 

@@ -289,4 +289,19 @@ export class ExerciseEntryPageComponent implements OnInit, OnDestroy {
       this.timerSubscription.unsubscribe();
     }
   }
+  formatSeconds(sec: number) {
+    const minutes = Math.floor(sec / 60);
+    const seconds = sec % 60;
+    const hours = Math.floor(sec / 3600);
+
+    let outSt = `${seconds} Sec`;
+    if (minutes > 0 || hours > 0) {
+      outSt = `${minutes} Min ` + outSt;
+    }
+    if (hours > 0) {
+      outSt = `${hours} Hr ` + outSt;
+    }
+
+    return outSt;
+  }
 }

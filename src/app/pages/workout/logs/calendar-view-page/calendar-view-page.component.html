@@ -43,7 +43,7 @@
 
         @for (dayObj of dayObjs(); track i; let i = $index) {
         <div @listFade class="relative p-2 bg-bg-surface-charcoal-950/80 rounded-md text-surface-charcoal-100/60"
-            [routerLink]="'workout/logs/'+getDateTs(dayObj.date)">
+            [routerLink]="getDateTs(dayObj.date).toString()">
             {{dayObj.date !== -1 ? dayObj.date : ' ' }}
             <div class="absolute right-0 bottom-0 text-xs flex flex-row-reverse text-green-400/90">
                 @if (dayObj.exerciseData) {

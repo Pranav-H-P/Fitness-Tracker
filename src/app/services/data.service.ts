@@ -410,44 +410,59 @@ export class DataService {
     this.databaseService.deleteExerciseMetadata(exerciseId);
   }
 
-  getAllExerciseLogsInDay(date: number): Observable<ExerciseLogEntry | null> {
+  getAllExerciseLogsInDay(date: number): Observable<Array<ExerciseLogEntry>> {
     return this.databaseService.getAllExerciseLogsInDay(date).pipe(
       map((data) => {
         const returnArr = data.values;
         if (returnArr && returnArr.length > 0) {
-          const exerciseLog = returnArr[0];
-          return {
-            name: exerciseLog['NAME'],
-            note: exerciseLog['NOTE'],
-            unit: exerciseLog['UNIT'],
-            sets: JSON.parse(exerciseLog['SETS']),
-          };
+          let exerciseLogArr: Array<ExerciseLogEntry> = [];
+          returnArr.forEach((exerciseLog) => {
+            exerciseLogArr.push({
+              id: exerciseLog['ID'],
+              name: exerciseLog['NAME'],
+              note: exerciseLog['NOTE'],
+              unit: exerciseLog['UNIT'],
+              sets: JSON.parse(exerciseLog['SETS']),
+            });
+          });
+          return exerciseLogArr;
         }
-        return null;
+        return [];
       }),
       catchError((err) => {
-        return of(null);
+        return of([]);
       })
     );
   }
-  getAllMetricLogsInDay(date: number): Observable<MetricLogEntry | null> {
+  getAllMetricLogsInDay(date: number): Observable<Array<MetricLogEntry>> {
     return this.databaseService.getAllMetricLogsInDay(date).pipe(
       map((data) => {
         const returnArr = data.values;
         if (returnArr && returnArr.length > 0) {
-          const metricLog = returnArr[0];
-          return {
-            name: metricLog['NAME'],
-            note: metricLog['NOTE'],
-            unit: metricLog['UNIT'],
-            entry: metricLog['ENTRY'],
-          };
+          let metricLogArr: Array<MetricLogEntry> = [];
+
+          returnArr.forEach((metricLog) => {
+            metricLogArr.push({
+              id: metricLog['ID'],
+              name: metricLog['NAME'],
+              note: metricLog['NOTE'],
+              unit: metricLog['UNIT'],
+              entry: metricLog['ENTRY'],
+            });
+          });
+          return metricLogArr;
         }
-        return null;
+        return [];
       }),
       catchError((err) => {
-        return of(null);
+        return of([]);
       })
     );
+  }
+  deleteMetricEntry(metricId: number, ts: number) {
+    this.databaseService.deleteMetricEntry(metricId, ts);
+  }
+  deleteExerciseEntry(exerciseId: number, ts: number) {
+    this.databaseService.deleteExerciseEntry(exerciseId, ts);
   }
 }

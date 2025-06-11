@@ -55,15 +55,19 @@ export interface TabData {
 }
 
 export interface ExerciseLogEntry {
+  id: number;
   name: string;
   note?: string;
   sets: Array<ExerciseSetData>;
   unit: string;
+  expanded?: boolean;
 }
 
 export interface MetricLogEntry {
+  id: number;
   name: string;
   note?: string;
   entry: string;
   unit: string;
+  expanded?: boolean;
 }
