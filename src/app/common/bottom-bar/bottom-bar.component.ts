@@ -78,6 +78,11 @@ export class BottomBarComponent {
         imgLink: 'assets/images/food.svg',
         text: 'Diet',
       },
+      {
+        navLink: 'settings/data',
+        imgLink: 'assets/images/database.svg',
+        text: 'Data',
+      },
     ],
   };
 }

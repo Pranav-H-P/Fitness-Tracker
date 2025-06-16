@@ -1,0 +1,27 @@
+<section class="flex flex-col h-[100%] bg-slate-900 text-surface-charcoal-100/90" (swipeleft)="swipeLeft()"
+    (swiperight)="swipeRight()">
+
+    <div @listFade
+        class="flex flex-col text-2xl items-start gap-2 p-3 mt-4 overflow-y-auto overflow-x-visible max-h-full touch-pan-y">
+
+        <button class="p-2 text-left w-full border-b-2 border-slate-700" (click)="exportExerciseData()">Export Exercise
+            Data</button>
+        <button class="p-2 text-left w-full border-b-2 border-slate-700" (click)="exportMetricData()">Export Metric
+            Data</button>
+        <button class="p-2 text-left w-full border-b-2 border-slate-700" (click)="exportFoodItemData()">Export Food Item
+            Data</button>
+        <button class="p-2 text-left w-full border-b-2 border-slate-700" (click)="exportFoodTrackingData()">Export Food
+            Tracking Data</button>
+
+        <button class="p-2 text-left w-full border-b-2 border-slate-700" (click)="importExerciseData()">Import Exercise
+            Data</button>
+        <button class="p-2 text-left w-full border-b-2 border-slate-700" (click)="importMetricData()">Import Metric
+            Data</button>
+        <button class="p-2 text-left w-full border-b-2 border-slate-700" (click)="importFoodItemData()">Import Food Item
+            Data</button>
+        <button class="p-2 text-left w-full border-b-2 border-slate-700" (click)="importFoodTrackingData()">Import Food
+            Tracking Data</button>
+
+
+    </div>
+</section>

@@ -26,6 +26,11 @@ export interface FractionalSetRatio {
   ratio: number;
 }
 
+export interface FractionalSetRatioExport {
+  muscleName: string;
+  ratio: number;
+}
+
 export interface Exercise {
   id?: number;
   name: string;

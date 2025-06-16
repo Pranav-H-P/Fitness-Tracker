@@ -253,6 +253,7 @@ export class DataService {
         })
       );
   }
+
   getAllTimeBest(exId: number): Observable<ExerciseSetData | null> {
     return this.databaseService.getAllExerciseEntrySets(exId).pipe(
       map((data) => {

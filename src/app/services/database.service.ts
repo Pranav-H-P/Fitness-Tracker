@@ -284,6 +284,16 @@ export class DatabaseService {
       )
     );
   }
+  getAllExerciseEntrySets(exId: number) {
+    // for view in exercise entry
+    // ascending since graph should start from first
+    return from(
+      this.db.query(
+        'SELECT SETS FROM EXERCISE_ENTRY WHERE EXERCISE_ID = ? ORDER BY TIMESTAMP ASC',
+        [exId]
+      )
+    );
+  }
 
   getLastExerciseEntrySet(exId: number) {
     // for view in exercise entry
@@ -306,16 +316,6 @@ export class DatabaseService {
     );
   }
 
-  getAllExerciseEntrySets(exId: number) {
-    // for view in exercise entry
-    // ascending since graph should start from first
-    return from(
-      this.db.query(
-        'SELECT SETS FROM EXERCISE_ENTRY WHERE EXERCISE_ID = ? ORDER BY TIMESTAMP ASC',
-        [exId]
-      )
-    );
-  }
   getLastExerciseEntryNote(exId: number) {
     const todayTS = new Date().setHours(0, 0, 0, 0).valueOf();
     return from(
@@ -481,4 +481,23 @@ export class DatabaseService {
       )
     );
   }
+
+  getAllExerciseMetadata() {
+    return from(this.db.query('SELECT * FROM EXERCISE'));
+  }
+
+  getAllExerciseEntryData() {
+    return from(this.db.query('SELECT * FROM EXERCISE_ENTRY'));
+  }
+
+  getAllMetricMetadata() {
+    return from(this.db.query('SELECT * FROM METRIC'));
+  }
+
+  getAllMetricEntryData() {
+    return from(this.db.query('SELECT * FROM METRIC_ENTRY'));
+  }
+
+  getAllFoodMetaData() {}
+  getAllFoodTrackingData() {}
 }
