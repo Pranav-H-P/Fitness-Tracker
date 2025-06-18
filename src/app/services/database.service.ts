@@ -4,6 +4,7 @@ import {
   ExerciseEntryData,
   FractionalSetRatio,
   Metric,
+  MetricEntryData,
 } from '../models';
 import {
   CapacitorSQLite,
@@ -187,11 +188,14 @@ export class DatabaseService {
   async showAllEntryData() {
     // for debug only
     const exData = await this.db.query('SELECT * FROM EXERCISE;');
+    const metData = await this.db.query('SELECT * FROM METRIC;');
     const exEntryData = await this.db.query('SELECT * FROM EXERCISE_ENTRY;');
     const metricEntryData = await this.db.query('SELECT * FROM METRIC_ENTRY;');
 
     console.log('EXERCISE');
     console.log(exData.values);
+    console.log('METRIC');
+    console.log(metData.values);
     console.log('EXERCISE ENTRIES');
     console.log(exEntryData.values);
     console.log('METRIC ENTRIES');
@@ -384,26 +388,26 @@ export class DatabaseService {
     );
   }
 
-  getMetricByName(metricName: string) {
+  getMetricMetadataByName(metricName: string) {
     return from(
       this.db.query('SELECT * FROM METRIC WHERE LOWER(NAME) = ?;', [
         metricName.toLowerCase(),
       ])
     );
   }
-  getMetricById(metricId: number) {
+  getMetricMetadataById(metricId: number) {
     return from(
       this.db.query('SELECT * FROM METRIC WHERE ID = ?;', [metricId])
     );
   }
-  getExerciseByName(exerciseName: string) {
+  getExerciseMetadataByName(exerciseName: string) {
     return from(
       this.db.query('SELECT * FROM EXERCISE WHERE LOWER(NAME) = ?;', [
         exerciseName.toLowerCase(),
       ])
     );
   }
-  getExerciseById(exerciseId: number) {
+  getExerciseMetadataById(exerciseId: number) {
     return from(
       this.db.query('SELECT * FROM EXERCISE WHERE ID = ?;', [exerciseId])
     );
@@ -496,6 +500,20 @@ export class DatabaseService {
 
   getAllMetricEntryData() {
     return from(this.db.query('SELECT * FROM METRIC_ENTRY'));
+  }
+
+  saveMetricEntryOnTs(metricEntry: MetricEntryData) {
+    return from(
+      this.db.run(
+        'INSERT OR REPLACE INTO METRIC_ENTRY (METRIC_ID, ENTRY, NOTE, TIMESTAMP) VALUES (?,?,?,?);',
+        [
+          metricEntry.metricId,
+          metricEntry.entry,
+          metricEntry.note,
+          metricEntry.timestamp,
+        ]
+      )
+    );
   }
 
   getAllFoodMetaData() {}

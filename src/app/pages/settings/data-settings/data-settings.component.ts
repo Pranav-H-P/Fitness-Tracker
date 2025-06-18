@@ -3,7 +3,8 @@ import { Component, inject, OnInit } from '@angular/core';
 import { DataService } from '../../../services/data.service';
 import { AppStateService } from '../../../services/app-state.service';
 import { Router } from '@angular/router';
-import { ExportService } from '../../../services/export.service';
+import { BackupService } from '../../../services/backup.service';
+import { PopupType } from '../../../eums';
 
 @Component({
   selector: 'app-data-settings',
@@ -38,35 +39,73 @@ export class DataSettingsComponent {
   dataService = inject(DataService);
   stateService = inject(AppStateService);
   router = inject(Router);
-  exportService = inject(ExportService);
+  backupService = inject(BackupService);
+
+  importType: null | 'EXERCISE' | 'METRIC' | 'FOOD_ITEM' | 'FOOD_TRACKING' =
+    null;
+
+  readonly PopupType = PopupType;
 
   constructor() {
     this.stateService.setCurrentPage('Settings');
   }
 
   exportExerciseData() {
-    this.exportService.exportExerciseData();
+    this.backupService.exportExerciseData();
   }
 
   exportMetricData() {
-    this.exportService.exportMetricData();
+    this.backupService.exportMetricData();
   }
 
   exportFoodItemData() {}
 
   exportFoodTrackingData() {}
 
-  importExerciseData() {}
+  importExerciseData() {
+    this.importType = 'EXERCISE';
+    this.stateService.setPopup(PopupType.IMPORT_WARNING);
+  }
 
-  importMetricData() {}
+  importMetricData() {
+    this.importType = 'METRIC';
+    this.stateService.setPopup(PopupType.IMPORT_WARNING);
+  }
 
-  importFoodItemData() {}
+  importFoodItemData() {
+    this.importType = 'FOOD_ITEM';
+    this.stateService.setPopup(PopupType.IMPORT_WARNING);
+  }
 
-  importFoodTrackingData() {}
+  importFoodTrackingData() {
+    this.importType = 'FOOD_TRACKING';
+    this.stateService.setPopup(PopupType.IMPORT_WARNING);
+  }
+
+  startImport() {
+    switch (this.importType) {
+      case 'EXERCISE':
+        this.backupService.importExerciseData();
+        break;
+      case 'METRIC':
+        this.backupService.importMetricData();
+        break;
+      case 'FOOD_ITEM':
+        break;
+      case 'FOOD_TRACKING':
+        break;
+    }
+    this.closePopup();
+  }
 
   swipeRight() {
     this.router.navigateByUrl('settings/diet');
   }
 
   swipeLeft() {}
+
+  closePopup() {
+    this.stateService.clearPopup();
+    this.importType = null;
+  }
 }

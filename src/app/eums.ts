@@ -16,4 +16,5 @@ export enum PopupType {
   DELETE_EXERCISE_METADATA = 'deleteExerciseMetadata',
   DELETE_METRIC_LOG = 'deleteMetricLog',
   DELETE_EXERCISE_LOG = 'deleteExerciseLog',
+  IMPORT_WARNING = 'importWarning',
 }

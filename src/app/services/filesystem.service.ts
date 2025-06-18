@@ -20,6 +20,15 @@ export class FilesystemService {
     );
   }
 
+  readFile(path: string) {
+    return from(
+      Filesystem.readFile({
+        path: path,
+        encoding: Encoding.UTF8,
+      })
+    );
+  }
+
   requestFilePermission(): Observable<Boolean> {
     return from(
       (async () => {

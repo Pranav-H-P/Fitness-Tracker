@@ -24,4 +24,29 @@
 
 
     </div>
+
+    @if (stateService.popUpName() === PopupType.IMPORT_WARNING) {
+    <div @fade class="fixed left-0 top-0 h-[100vh] w-[100vw] flex justify-center items-center z-40 bg-black/50"
+        (click)="closePopup()">
+
+        <div class="bg-surface-charcoal-900 rounded-lg min-h-[20vh] w-[90vw] p-5 flex flex-col justify-between gap-5"
+            (click)="$event.stopPropagation()">
+
+            <p class="text-3xl">Warning!</p>
+
+            <p class="my-auto text-center">Overlapping entries will be overwritten!</p>
+
+            <div class="flex justify-between">
+                <button class="p-3 px-4 bg-surface-charcoal-700 rounded-lg text-lg"
+                    (click)="closePopup()">Cancel</button>
+                <button class="p-3 px-4 bg-surface-charcoal-700 rounded-lg text-lg"
+                    (click)="startImport()">Import</button>
+            </div>
+
+
+        </div>
+
+    </div>
+    }
+
 </section>

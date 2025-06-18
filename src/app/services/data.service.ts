@@ -314,7 +314,7 @@ export class DataService {
   }
 
   getMetricMetadataByName(metricName: string): Observable<Metric | null> {
-    return this.databaseService.getMetricByName(metricName).pipe(
+    return this.databaseService.getMetricMetadataByName(metricName).pipe(
       map((data) => {
         const returnArr = data.values;
         if (returnArr && returnArr.length > 0) {
@@ -334,7 +334,7 @@ export class DataService {
     );
   }
   getMetricMetadataById(metricId: number): Observable<Metric | null> {
-    return this.databaseService.getMetricById(metricId).pipe(
+    return this.databaseService.getMetricMetadataById(metricId).pipe(
       map((data) => {
         const returnArr = data.values;
         if (returnArr && returnArr.length > 0) {
@@ -354,7 +354,7 @@ export class DataService {
     );
   }
   getExerciseMetadataByName(exerciseName: string): Observable<Exercise | null> {
-    return this.databaseService.getExerciseByName(exerciseName).pipe(
+    return this.databaseService.getExerciseMetadataByName(exerciseName).pipe(
       map((data) => {
         console.log('exercise metadata');
         console.log(data);
@@ -376,7 +376,7 @@ export class DataService {
     );
   }
   getExerciseMetadataById(exerciseId: number): Observable<Exercise | null> {
-    return this.databaseService.getExerciseById(exerciseId).pipe(
+    return this.databaseService.getExerciseMetadataById(exerciseId).pipe(
       map((data) => {
         const returnArr = data.values;
         if (returnArr && returnArr.length > 0) {
