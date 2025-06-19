@@ -172,7 +172,7 @@ export class LogPageComponent implements OnInit {
     return outSt;
   }
   formatSetData(exInd: number, setInd: number) {
-    return `${this.exerciseLogData[exInd].sets[setInd].load} ${this.exerciseLogData[exInd].unit} x ${this.exerciseLogData[exInd].sets[setInd].load} Reps`;
+    return `${this.exerciseLogData[exInd].sets[setInd].load} ${this.exerciseLogData[exInd].unit} x ${this.exerciseLogData[exInd].sets[setInd].reps} Reps`;
   }
   closePopup() {
     this.stateService.clearPopup();
